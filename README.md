@@ -12,6 +12,8 @@ A desktop app for practicing timed C++ coding interview problems. Pick a problem
 - Custom tab to run your code on your own input
 - Your code and time are stored per problem and survive restarts
 - New and updated problems are downloaded from this repository, so you do not need a new release for more problems
+- The app updates itself: new versions download in the background and install when you restart
+- Works on phones too: the website switches to Problem, Code and Output tabs on small screens
 
 ## Requirements
 
@@ -30,6 +32,14 @@ On Linux, make the AppImage executable first:
 chmod +x dry-run-*-linux.AppImage
 ./dry-run-*-linux.AppImage
 ```
+
+### Updates
+
+From version 1.1.0 on, the Windows installer and the AppImage keep themselves up to date. On start and every few hours the app checks this repository's latest release. When there is a newer version it downloads it in the background and shows a "Restart to update" button in the menu; if you skip it, the update is installed when you quit. Your code and timers are kept. Copies running from source do not update themselves.
+
+Version 1.0.0 cannot update itself, so install 1.1.0 from the releases page once.
+
+To release a new version, bump `version` in `package.json`, commit, and push a tag like `v1.2.0`. The release workflow builds both installers and uploads them together with `latest.yml`, `latest-linux.yml` and the `.blockmap` files, which the installed apps read to find the update.
 
 ## Run from source
 
@@ -97,7 +107,7 @@ npm run dist:linux
 npm run dist:win
 ```
 
-Pushing a tag like `v1.0.0` builds both installers on GitHub Actions and attaches them to a release.
+Pushing a tag like `v1.2.0` (after bumping `version` in `package.json`) builds both installers on GitHub Actions and attaches them, with the update files, to a release.
 
 ## License
 

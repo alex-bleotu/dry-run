@@ -2,6 +2,7 @@ const { BrowserWindow, app, ipcMain } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 
+const { setupAutoUpdate } = require('./app-update');
 const { loadTests, readMeta, runCustom, runTests } = require('./runner');
 const { MANIFEST_NAME, VERSION_FILE_NAME, syncProblems } = require('./updater');
 
@@ -210,6 +211,7 @@ if (app.requestSingleInstanceLock()) {
   app.whenReady().then(() => {
     resetDownloadedProblemsOnNewVersion();
     createWindow();
+    setupAutoUpdate();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();

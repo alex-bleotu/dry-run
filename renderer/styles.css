@@ -295,6 +295,49 @@ kbd {
   text-transform: uppercase;
 }
 
+.update-banner {
+  align-items: center;
+  background: var(--accent-soft);
+  border: 1px solid rgb(99 91 255 / 35%);
+  border-radius: var(--radius);
+  display: flex;
+  gap: 12px;
+  margin-block-end: 24px;
+  padding: 8px 8px 8px 14px;
+}
+
+.update-banner[hidden],
+.update-install[hidden] {
+  display: none;
+}
+
+.update-banner svg {
+  color: var(--accent-text);
+  flex: none;
+}
+
+.update-text {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  min-block-size: 32px;
+  padding-block: 6px;
+}
+
+.update-install {
+  padding: 7px 14px;
+}
+
+.menu-version {
+  color: var(--subtle);
+  font-size: 12px;
+  margin: 32px 0 0;
+}
+
+.menu-version:empty {
+  display: none;
+}
+
 .menu-toolbar {
   align-items: center;
   display: flex;

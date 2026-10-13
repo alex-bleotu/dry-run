@@ -27,6 +27,15 @@
             <p class="menu-subtitle">Timed C++ interview practice. Pick a problem and the clock starts.</p>
           </div>
         </header>
+        <div class="update-banner" id="update-banner" role="status" hidden>
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"></path>
+            <path d="M7 10l5 5 5-5"></path>
+            <path d="M5 21h14"></path>
+          </svg>
+          <span class="update-text" id="update-text"></span>
+          <button class="run update-install" id="update-install" type="button" hidden>Restart to update</button>
+        </div>
         <div class="menu-toolbar">
           <h2 class="section-label" id="problem-count">Problems</h2>
           <span class="menu-status" id="menu-status" role="status"></span>
@@ -39,6 +48,7 @@
           </button>
         </div>
         <ul class="problem-list" id="problem-list"></ul>
+        <p class="menu-version" id="menu-version"></p>
       </div>
     </section>
     <section class="screen" id="screen" hidden>

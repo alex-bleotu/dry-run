@@ -24,6 +24,7 @@ const SAVE_DELAY_MS = 500;
 const CUSTOM_STORAGE_PREFIX = 'practice.custom-input.';
 const TIMER_INTERVAL_MS = 1000;
 const ELAPSED_STORAGE_PREFIX = 'practice.elapsed.';
+const PANE_STORAGE_KEY = 'practice.pane';
 const EDITOR_THEME_NAME = 'dry-run';
 // On phones the problem, the code and the output are tabs instead of side-by-side panels (see styles.css).
 const PHONE_QUERY = globalThis.matchMedia('(max-width: 760px), (max-height: 500px) and (pointer: coarse)');
@@ -107,6 +108,10 @@ const timerElement = document.getElementById('timer');
 const backButton = document.getElementById('back');
 const resetButton = document.getElementById('reset');
 const menuStatusElement = document.getElementById('menu-status');
+const menuVersionElement = document.getElementById('menu-version');
+const updateBannerElement = document.getElementById('update-banner');
+const updateTextElement = document.getElementById('update-text');
+const updateInstallButton = document.getElementById('update-install');
 const menuRefreshButton = document.getElementById('menu-refresh');
 const screenTitleElement = document.getElementById('screen-title');
 const screenDifficultyElement = document.getElementById('screen-difficulty');
@@ -400,6 +405,39 @@ function applyView() {
 function showPane(pane) {
   layout.dataset.pane = pane;
   paneTabList.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.pane === pane)));
+  try {
+    globalThis.sessionStorage.setItem(PANE_STORAGE_KEY, pane);
+  } catch (error) {
+    console.error('Could not store the open tab', { error });
+  }
+}
+
+function readStoredPane() {
+  try {
+    return globalThis.sessionStorage.getItem(PANE_STORAGE_KEY) || 'problem';
+  } catch (error) {
+    console.error('Could not read the open tab', { error });
+
+    return 'problem';
+  }
+}
+
+// The open problem is kept in the address (#problem-id), so a reload reopens it and Back returns to the menu.
+function readHashProblemId() {
+  try {
+    return decodeURIComponent(globalThis.location.hash.slice(1));
+  } catch {
+    return '';
+  }
+}
+
+function clearHash({ isReplacing = false } = {}) {
+  const url = `${globalThis.location.pathname}${globalThis.location.search}`;
+  if (isReplacing) {
+    globalThis.history.replaceState(null, '', url);
+  } else {
+    globalThis.history.pushState(null, '', url);
+  }
 }
 
 function selectView(view) {
@@ -770,15 +808,18 @@ function resetResults() {
   statusElement.textContent = '';
 }
 
-async function openProblem(id) {
+async function openProblem(id, pane = 'problem') {
   const data = await globalThis.practice.open(id);
   const problem = { defaultInput: data.defaultInput, id, title: data.title };
   currentProblem = problem;
+  if (readHashProblemId() !== id) {
+    globalThis.location.hash = encodeURIComponent(id);
+  }
   inputKeyList = data.inputKeys;
   menuElement.hidden = true;
   screenElement.hidden = false;
   screenTitleElement.textContent = data.title;
-  showPane('problem');
+  showPane(pane);
   screenDifficultyElement.className = `pill pill-${String(data.difficulty).toLowerCase()}`;
   screenDifficultyElement.textContent = data.difficulty || '';
   problemElement.innerHTML = globalThis.marked.parse(data.problem);
@@ -846,7 +887,15 @@ async function handleReset() {
   saveElapsed();
 }
 
-async function backToMenu() {
+function showProblem(id, pane) {
+  openProblem(id, pane).catch((error) => {
+    console.error('Open failed', { error, problem: id });
+    menuElement.hidden = false;
+    screenElement.hidden = true;
+  });
+}
+
+async function closeProblem() {
   clearTimeout(saveTimer);
   try {
     await saveCode();
@@ -858,6 +907,28 @@ async function backToMenu() {
   renderMenu();
   screenElement.hidden = true;
   menuElement.hidden = false;
+}
+
+async function backToMenu() {
+  await closeProblem();
+  if (readHashProblemId()) {
+    clearHash();
+  }
+}
+
+async function handleHashChange() {
+  const id = readHashProblemId();
+  if (id === (currentProblem ? currentProblem.id : '')) {
+    return;
+  }
+  if (currentProblem) {
+    await closeProblem();
+  }
+  if (problemList.some((problem) => problem.id === id)) {
+    showProblem(id);
+  } else if (id) {
+    clearHash({ isReplacing: true });
+  }
 }
 
 function createMetaItem(iconName, text, className = 'meta-item') {
@@ -896,13 +967,7 @@ function renderMenu() {
       createElement('p', 'problem-card-summary', problem.summary),
       meta,
     );
-    card.addEventListener('click', () => {
-      openProblem(problem.id).catch((error) => {
-        console.error('Open failed', { error, problem: problem.id });
-        menuElement.hidden = false;
-        screenElement.hidden = true;
-      });
-    });
+    card.addEventListener('click', () => showProblem(problem.id));
     item.appendChild(card);
     problemListElement.appendChild(item);
   });
@@ -962,6 +1027,28 @@ async function syncProblemList() {
   }
 }
 
+function renderUpdateStatus(status) {
+  menuVersionElement.textContent = `Dry Run ${status.currentVersion}`;
+  updateBannerElement.hidden = status.state === 'idle';
+  updateInstallButton.hidden = status.state !== 'ready';
+  updateTextElement.textContent =
+    status.state === 'ready'
+      ? `Dry Run ${status.version} is ready to install.`
+      : `Downloading Dry Run ${status.version}... ${status.percent}%`;
+}
+
+async function installUpdate() {
+  updateInstallButton.disabled = true;
+  clearTimeout(saveTimer);
+  try {
+    await saveCode();
+  } catch (error) {
+    console.error('Save before update failed', { error });
+  }
+  saveElapsed();
+  await globalThis.practice.installUpdate();
+}
+
 async function start() {
   configureMarkdown();
   problemList = await globalThis.practice.list();
@@ -975,6 +1062,17 @@ async function start() {
   backButton.addEventListener('click', backToMenu);
   resetButton.addEventListener('click', handleReset);
   paneTabList.forEach((tab) => tab.addEventListener('click', () => showPane(tab.dataset.pane)));
+  globalThis.addEventListener('hashchange', handleHashChange);
+  const reopenedId = readHashProblemId();
+  if (problemList.some((problem) => problem.id === reopenedId)) {
+    showProblem(reopenedId, readStoredPane());
+  } else if (reopenedId) {
+    clearHash({ isReplacing: true });
+  }
+  if (globalThis.practice.onUpdateStatus) {
+    updateInstallButton.addEventListener('click', installUpdate);
+    globalThis.practice.onUpdateStatus(renderUpdateStatus);
+  }
   globalThis.addEventListener('beforeunload', () => {
     saveElapsed();
     if (currentProblem) {
