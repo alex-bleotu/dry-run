@@ -1,0 +1,10 @@
+# Netlify builds the website version of Dry Run with `npm run build:web` and serves web-dist/.
+
+[build]
+  command = "npm run build:web"
+  publish = "web-dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # The website does not need Electron itself, so skip its 100 MB download during install.
+  ELECTRON_SKIP_BINARY_DOWNLOAD = "1"

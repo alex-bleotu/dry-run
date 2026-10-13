@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
+const { buildStdin, judge, normalize } = require('./judge');
+
 const COMPILE_TIMEOUT_MS = 60000;
 const RUN_TIMEOUT_MS = 2000;
 const MAX_OUTPUT_LENGTH = 1000000;
@@ -33,23 +35,6 @@ function loadTests(testsDirectory) {
 
 function readMeta(problemDirectory) {
   return JSON.parse(fs.readFileSync(path.join(problemDirectory, 'meta.json'), 'utf8'));
-}
-
-function buildStdin(input, inputKeyList) {
-  return inputKeyList.map((key) => {
-    const lineList = input[key] || [];
-
-    return [String(lineList.length), ...lineList].join('\n');
-  }).join('\n') + '\n';
-}
-
-function normalize(text) {
-  return text
-    .replace(/\r/g, '')
-    .split('\n')
-    .map((line) => line.trimEnd())
-    .join('\n')
-    .trim();
 }
 
 function compile(workDirectory) {
@@ -109,35 +94,6 @@ function runProgram(workDirectory, stdinText) {
     });
     child.stdin.end(stdinText);
   });
-}
-
-function judge(test, runResult, number, shouldMaskHidden) {
-  const actual = runResult.stdout;
-  let status = 'fail';
-  if (runResult.isTimedOut) {
-    status = 'timeout';
-  } else if (runResult.exitCode !== 0) {
-    status = 'error';
-  } else if (normalize(actual) === normalize(test.expected)) {
-    status = 'pass';
-  }
-
-  const name = `Test ${number}`;
-  if (test.isHidden && shouldMaskHidden) {
-    return { isHidden: true, name, status };
-  }
-
-  return {
-    actual: normalize(actual),
-    expected: test.expected,
-    input: test.input,
-    isHidden: test.isHidden,
-    label: test.name,
-    name,
-    part: test.part,
-    status,
-    stderr: runResult.stderr,
-  };
 }
 
 async function withWorkDirectory(code, callback) {

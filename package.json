@@ -13,10 +13,12 @@
   "main": "main.js",
   "desktopName": "dry-run.desktop",
   "scripts": {
+    "build:web": "node tools/build-web.js",
     "check": "node tools/check.js",
     "dist:linux": "electron-builder --linux AppImage --publish never",
     "dist:win": "electron-builder --win nsis --publish never",
     "generate-tests": "node tools/generate-all.js",
+    "preview:web": "node tools/serve-web.js",
     "start": "electron . --no-sandbox"
   },
   "dependencies": {
@@ -26,6 +28,7 @@
     "monaco-editor": "^0.57.0"
   },
   "devDependencies": {
+    "@yowasp/clang": "21.1.4-3",
     "electron": "^44.7.0",
     "electron-builder": "^26.15.3"
   },
@@ -36,6 +39,7 @@
       "output": "dist"
     },
     "files": [
+      "judge.js",
       "main.js",
       "preload.js",
       "runner.js",

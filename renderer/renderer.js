@@ -123,6 +123,7 @@ const caseDetailElement = document.getElementById('case-detail');
 const statusElement = document.getElementById('status');
 const runButton = document.getElementById('run');
 const runLabelElement = document.getElementById('run-label');
+const compilerHintElement = document.getElementById('compiler-hint');
 
 let editor = null;
 let problemList = [];
@@ -623,7 +624,8 @@ let monacoPromise = null;
 function loadMonaco() {
   if (!monacoPromise) {
     monacoPromise = new Promise((resolve) => {
-      const base = new URL('../node_modules/monaco-editor/min', globalThis.location.href).href;
+      const loaderSource = document.querySelector('script[src$="/vs/loader.js"]').src;
+      const base = loaderSource.slice(0, -'/vs/loader.js'.length);
       globalThis.MonacoEnvironment = {
         getWorkerUrl() {
           return `${base}/vs/editor/editor.worker.js`;
@@ -905,6 +907,9 @@ async function start() {
     }
   });
   setupSplitter();
+  globalThis.practice.onCompilerStatus?.((text) => {
+    compilerHintElement.textContent = text;
+  });
 }
 
 start().catch((error) => {
