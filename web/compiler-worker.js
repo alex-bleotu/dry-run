@@ -2,6 +2,7 @@
 // tools/build-web.js gzips the compiler's large files and splits them into parts; this worker puts them back
 // together, and uses the precompiled <bits/stdc++.h> from the build so each compile skips the standard headers.
 const COMPILER_URL = new URL('../compiler/', import.meta.url);
+const BUILD_VERSION = new URL(import.meta.url).search;
 const PCH_NAME = 'stdc++.pch';
 const nativeFetch = globalThis.fetch.bind(globalThis);
 
@@ -16,8 +17,8 @@ function postStatus(text, title = '') {
   }
 }
 
-async function fetchOk(url) {
-  const response = await nativeFetch(url);
+async function fetchOk(url, init) {
+  const response = await nativeFetch(url, init);
   if (!response.ok) {
     throw new Error(`Could not load ${url} (${response.status})`);
   }
@@ -73,9 +74,9 @@ function loadCompiler() {
   if (!compilerPromise) {
     compilerPromise = (async () => {
       postStatus('Downloading compiler...');
-      manifest = await (await fetchOk(new URL('manifest.json', COMPILER_URL))).json();
+      manifest = await (await fetchOk(new URL('manifest.json', COMPILER_URL), { cache: 'no-cache' })).json();
       const [{ Exit, runClang }, pch] = await Promise.all([
-        import(new URL('bundle.js', COMPILER_URL).href),
+        import(new URL(`bundle.js${BUILD_VERSION}`, COMPILER_URL).href),
         fetchPacked(PCH_NAME).arrayBuffer().then((buffer) => new Uint8Array(buffer)),
       ]);
       const fetchProgress = ({ doneLength, totalLength }) => {

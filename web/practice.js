@@ -1,6 +1,8 @@
 // Browser version of the API that preload.js exposes in the desktop app. Problems are static files, code is kept in
 // localStorage, and solutions are compiled and run by Web Workers instead of g++.
 (() => {
+  // The ?v= this script was loaded with (see tools/build-web.js), passed on to the workers.
+  const BUILD_VERSION = new URL(document.currentScript.src).search;
   const CODE_STORAGE_PREFIX = 'practice.code.';
   const RUN_TIMEOUT_MS = 2000;
   const { buildStdin, judge } = globalThis.dryRunJudge;
@@ -14,7 +16,7 @@
   let nextCompileId = 1;
 
   async function fetchFile(url) {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-cache' });
     if (!response.ok) {
       throw new Error(`Could not load ${url} (${response.status})`);
     }
@@ -78,7 +80,7 @@
 
   function getCompilerWorker() {
     if (!compilerWorker) {
-      compilerWorker = new Worker('web/compiler-worker.js', { type: 'module' });
+      compilerWorker = new Worker(`web/compiler-worker.js${BUILD_VERSION}`, { type: 'module' });
       compilerWorker.addEventListener('message', ({ data }) => {
         if (data.type === 'status') {
           setCompilerStatus(data.text, data.title);
@@ -124,7 +126,7 @@
     }
 
     startWorker() {
-      this.worker = new Worker('web/program-worker.js');
+      this.worker = new Worker(`web/program-worker.js${BUILD_VERSION}`);
       this.readyPromise = new Promise((resolve, reject) => {
         this.worker.onmessage = resolve;
         this.worker.onerror = (event) => {
