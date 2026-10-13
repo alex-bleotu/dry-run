@@ -25,6 +25,8 @@ const CUSTOM_STORAGE_PREFIX = 'practice.custom-input.';
 const TIMER_INTERVAL_MS = 1000;
 const ELAPSED_STORAGE_PREFIX = 'practice.elapsed.';
 const EDITOR_THEME_NAME = 'dry-run';
+// On phones the problem, the code and the output are tabs instead of side-by-side panels (see styles.css).
+const PHONE_QUERY = globalThis.matchMedia('(max-width: 760px), (max-height: 500px) and (pointer: coarse)');
 const EDITOR_FONT_FAMILY = "'JetBrains Mono Variable', 'DejaVu Sans Mono', 'Liberation Mono', monospace";
 const TYPE_KEYWORD_LIST = [
   'auto',
@@ -126,6 +128,7 @@ const statusElement = document.getElementById('status');
 const runButton = document.getElementById('run');
 const runLabelElement = document.getElementById('run-label');
 const compilerHintElement = document.getElementById('compiler-hint');
+const paneTabList = [...document.querySelectorAll('.pane-tab')];
 
 let editor = null;
 let problemList = [];
@@ -377,6 +380,7 @@ function showResults(runOutput) {
   hasResults = true;
   applyView();
   renderCaseList();
+  caseListElement.querySelector('[aria-current="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   renderDetail();
 
   showResultSummary();
@@ -393,9 +397,17 @@ function applyView() {
   statusElement.textContent = '';
 }
 
+function showPane(pane) {
+  layout.dataset.pane = pane;
+  paneTabList.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.pane === pane)));
+}
+
 function selectView(view) {
   activeView = view;
   applyView();
+  if (PHONE_QUERY.matches && layout.dataset.pane === 'code') {
+    showPane('output');
+  }
   if (view === 'tests' && resultList.length > 0) {
     showResultSummary();
   }
@@ -488,7 +500,7 @@ function showCustomOutput(output) {
 }
 
 async function handleRun() {
-  if (runButton.disabled || !currentProblem) {
+  if (runButton.disabled || !currentProblem || !editor) {
     return;
   }
 
@@ -507,6 +519,9 @@ async function handleRun() {
     } else {
       showResults(await globalThis.practice.run({ code: editor.getValue(), id: currentProblem.id }));
     }
+    if (PHONE_QUERY.matches) {
+      showPane('output');
+    }
   } catch (error) {
     console.error('Run failed', { error });
     statusElement.className = 'status status-fail';
@@ -517,7 +532,7 @@ async function handleRun() {
 }
 
 function saveCode() {
-  if (!currentProblem) {
+  if (!currentProblem || !editor) {
     return Promise.resolve();
   }
 
@@ -757,11 +772,13 @@ function resetResults() {
 
 async function openProblem(id) {
   const data = await globalThis.practice.open(id);
-  currentProblem = { defaultInput: data.defaultInput, id, title: data.title };
+  const problem = { defaultInput: data.defaultInput, id, title: data.title };
+  currentProblem = problem;
   inputKeyList = data.inputKeys;
   menuElement.hidden = true;
   screenElement.hidden = false;
   screenTitleElement.textContent = data.title;
+  showPane('problem');
   screenDifficultyElement.className = `pill pill-${String(data.difficulty).toLowerCase()}`;
   screenDifficultyElement.textContent = data.difficulty || '';
   problemElement.innerHTML = globalThis.marked.parse(data.problem);
@@ -772,6 +789,10 @@ async function openProblem(id) {
   applyView();
 
   const monaco = await loadMonaco();
+  // The editor loads on the first open, and the problem may have been left by the time it is ready.
+  if (currentProblem !== problem) {
+    return;
+  }
   colorizeProblemCode(monaco);
   const model = monaco.editor.createModel(data.code, 'cpp');
   model.onDidChangeContent(handleEditorChange);
@@ -797,7 +818,7 @@ function confirmReset() {
 }
 
 async function handleReset() {
-  if (!currentProblem || !(await confirmReset())) {
+  if (!currentProblem || !editor || !(await confirmReset())) {
     return;
   }
 
@@ -953,6 +974,7 @@ async function start() {
   }
   backButton.addEventListener('click', backToMenu);
   resetButton.addEventListener('click', handleReset);
+  paneTabList.forEach((tab) => tab.addEventListener('click', () => showPane(tab.dataset.pane)));
   globalThis.addEventListener('beforeunload', () => {
     saveElapsed();
     if (currentProblem) {
@@ -970,8 +992,9 @@ async function start() {
     }
   });
   setupSplitter();
-  globalThis.practice.onCompilerStatus?.((text) => {
+  globalThis.practice.onCompilerStatus?.(({ text, title }) => {
     compilerHintElement.textContent = text;
+    compilerHintElement.title = title;
   });
 }
 

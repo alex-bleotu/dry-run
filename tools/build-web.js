@@ -18,16 +18,8 @@ const PROBLEMS_DIRECTORY = path.join(ROOT, 'problems');
 const PART_SIZE = 8 * 1024 * 1024;
 const PCH_NAME = 'stdc++.pch';
 // The desktop app's g++ flags, plus -fno-exceptions because the WebAssembly C++ library has no exception support.
-const COMPILE_FLAG_LIST = [
-  '-std=c++17',
-  '-Wall',
-  '-Wextra',
-  '-Werror',
-  '-O2',
-  '-fno-exceptions',
-  '-isystem',
-  'include',
-];
+const LANGUAGE_FLAG_LIST = ['-std=c++17', '-Wall', '-Wextra', '-Werror', '-O2', '-fno-exceptions'];
+const COMPILE_FLAG_LIST = [...LANGUAGE_FLAG_LIST, '-isystem', 'include'];
 // An 8 MB stack like a desktop program gets, instead of WebAssembly's default 64 KB.
 const LINK_FLAG_LIST = ['-Wl,-z,stack-size=8388608'];
 // Every C++17 standard header that builds for WASI. <csetjmp> and <csignal> do not, so they are left out.
@@ -193,9 +185,10 @@ async function buildCompiler() {
     JSON.stringify(
       {
         compileFlagList: COMPILE_FLAG_LIST,
-        description: `clang++ ${clangVersion} -std=c++17 -Wall -Wextra -Werror -O2 (in your browser)`,
+        description: `Clang ${clangVersion}: ${LANGUAGE_FLAG_LIST.join(' ')}`,
         fileMap,
         header: HEADER,
+        label: LANGUAGE_FLAG_LIST[0].slice('-std='.length).toUpperCase(),
         linkFlagList: LINK_FLAG_LIST,
         version,
       },

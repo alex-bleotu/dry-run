@@ -244,6 +244,7 @@ kbd {
     radial-gradient(700px 360px at 95% 0%, rgb(255 209 102 / 6%), transparent 70%),
     var(--background);
   block-size: 100vh;
+  block-size: 100dvh;
   overflow: auto;
 }
 
@@ -333,7 +334,7 @@ kbd {
 .problem-list {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -451,6 +452,7 @@ kbd {
 
 .screen {
   block-size: 100vh;
+  block-size: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -474,6 +476,14 @@ kbd {
   font-size: 15px;
   font-weight: 650;
   letter-spacing: -0.01em;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pane-tabs.segmented {
+  display: none;
 }
 
 .timer {
@@ -1365,6 +1375,215 @@ pre.output {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+/* Phones, upright or sideways: the problem, the code and the output become tabs instead of side-by-side panels.
+   Keep the query in sync with PHONE_QUERY in renderer.js. */
+
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
+  .menu-inner {
+    padding: 28px 16px 40px;
+  }
+
+  .menu-header {
+    gap: 12px;
+    margin-block-end: 28px;
+  }
+
+  .brand-logo {
+    block-size: 38px;
+    inline-size: 38px;
+  }
+
+  .menu-title {
+    font-size: 22px;
+  }
+
+  .menu-subtitle {
+    font-size: 13px;
+  }
+
+  .menu-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .menu-refresh {
+    margin-inline-start: auto;
+  }
+
+  .menu-status {
+    flex-basis: 100%;
+    order: 3;
+    text-align: start;
+  }
+
+  .menu-status:empty {
+    display: none;
+  }
+
+  .problem-list {
+    gap: 12px;
+  }
+
+  .problem-card:hover {
+    transform: none;
+  }
+
+  .topbar {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+
+  .topbar-divider {
+    display: none;
+  }
+
+  .timer {
+    font-size: 12px;
+    padding: 3px 10px;
+  }
+
+  .pane-tabs.segmented {
+    display: flex;
+    flex: none;
+    margin: 0 8px 8px;
+  }
+
+  .pane-tab {
+    flex: 1;
+    padding-block: 6px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .splitter {
+    display: none;
+  }
+
+  .layout[data-pane='problem'] .workspace,
+  .layout:not([data-pane='problem']) .problem-panel,
+  .layout[data-pane='output'] .editor-panel {
+    display: none;
+  }
+
+  .problem {
+    padding: 4px 16px 24px;
+  }
+
+  .markdown h1 {
+    font-size: 21px;
+  }
+
+  /* On the code tab the output panel shrinks to its bar, which keeps the Run button in reach. */
+  .layout[data-pane='code'] .bottom {
+    block-size: auto;
+  }
+
+  .layout[data-pane='code'] .bottom .results,
+  .layout[data-pane='code'] .bottom .custom {
+    display: none;
+  }
+
+  .layout[data-pane='output'] .bottom {
+    block-size: auto;
+    flex: 1;
+  }
+
+  .layout[data-pane='output'] .bottom:not(.is-open)::after {
+    color: var(--subtle);
+    content: 'Run your code to see the test results here.';
+    padding: 16px;
+  }
+
+  .bottom > .panel-header {
+    flex-wrap: wrap;
+    padding-inline-start: 8px;
+  }
+
+  .run {
+    margin-inline-start: auto;
+  }
+
+  .run-shortcut {
+    display: none;
+  }
+
+  .status {
+    flex-basis: 100%;
+    justify-content: flex-start;
+    order: 3;
+    padding-inline-start: 4px;
+  }
+
+  .status:empty {
+    display: none;
+  }
+
+  .results,
+  .custom {
+    align-content: start;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: auto;
+  }
+
+  .case-sidebar {
+    background: var(--surface);
+    border-block-end: 1px solid var(--border);
+    border-inline-end: 0;
+    inset-block-start: 0;
+    position: sticky;
+    z-index: 1;
+  }
+
+  .case-summary {
+    border-block-end: 0;
+    padding-block-end: 4px;
+  }
+
+  .case-list {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .case-list > li {
+    flex: none;
+  }
+
+  .case-button {
+    gap: 6px;
+    inline-size: auto;
+    padding: 5px 10px 5px 6px;
+  }
+
+  .case-tag {
+    font-size: 0;
+    margin-inline-start: 0;
+  }
+
+  .case-detail,
+  .custom-output {
+    overflow: visible;
+  }
+
+  .compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .custom-inputs {
+    border-block-end: 1px solid var(--border);
+    border-inline-end: 0;
+    overflow: visible;
+  }
+
+  /* iOS zooms into inputs with text under 16px when they get focus. */
+  .custom-input,
+  .monaco-editor textarea {
+    font-size: 16px !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
