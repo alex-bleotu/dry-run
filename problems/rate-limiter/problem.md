@@ -25,7 +25,7 @@ A request at time `t` from `user` is `ALLOWED` when both are true:
 
 Otherwise it is `BLOCKED`. Blocked requests are not counted. Use `long long`: timestamps and windows can be large.
 
-## Part 1: a limit per user
+## Part 1: A limit per user
 
 Only `config` and `requests` are filled, and the window is longer than the whole log. A user gets at most `limit` allowed requests.
 
@@ -42,7 +42,7 @@ requests = ["1,alice","2,alice","3,bob","4,alice","5,bob"]
 5,bob,ALLOWED
 ```
 
-## Part 2: sliding window
+## Part 2: Sliding window
 
 Old allowed requests leave the window as time passes.
 
@@ -60,7 +60,7 @@ requests = ["1,alice","2,alice","3,alice","11,alice","12,alice","13,alice"]
 13,alice,BLOCKED
 ```
 
-## Part 3: overrides
+## Part 3: Overrides
 
 Now `overrides` is filled too. An override `user,limit` gives that one user their own limit instead of the default from `config`. The window size stays the same for everyone.
 
@@ -98,7 +98,7 @@ Things to handle:
 - An override of `0` means every request from that user is blocked.
 - Users without an override use the default limit.
 
-## Part 4: blocklist
+## Part 4: Blocklist
 
 Now `blocked` is filled too. Each line is a user name. A blocked user is always `BLOCKED`, whatever the limit, the window or an override says. Their requests are not counted, because they are never allowed.
 

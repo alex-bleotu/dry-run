@@ -32,7 +32,7 @@ The four input lists:
 subscriptions = ["user1,sub_a,30","user1,sub_b,60","user2,sub_c,30","user3,sub_d,150"]
 ```
 
-## Part 1: subscriptions only
+## Part 1: Subscriptions only
 
 Only `subscriptions` is filled. Nothing changes during the period, so every subscription is active for all 30 days. `price * 30 / 30` is just `price`, so each user's total is the sum of their prices.
 
@@ -44,7 +44,7 @@ user3,150
 
 user1 has `sub_a` (30) and `sub_b` (60): 30 + 60 = 90.
 
-## Part 2: plan changes
+## Part 2: Plan changes
 
 Now `changes` is filled too.
 
@@ -77,7 +77,7 @@ user2,75
 user3,150
 ```
 
-## Part 3: cancellations
+## Part 3: Cancellations
 
 Now `cancellations` is filled too. A cancellation `user,sub_id,day` means the subscription stops on `day`. It is charged for days `1..day-1`, and not for `day` or after.
 
@@ -124,7 +124,7 @@ You can solve Parts 2, 3 and 4 with one idea: turn everything into a timeline of
 6. When you close a subscription, add `price * days_it_was_active` to its user's units.
 7. Print every user, sorted, with `units / 30`.
 
-## Part 4: mid-period starts
+## Part 4: Mid-period starts
 
 Now `starts` is filled too. A start `user,sub_id,day,price` creates a brand new subscription on `day` (it is not a replacement for anything). It is charged from `day` through day 30.
 

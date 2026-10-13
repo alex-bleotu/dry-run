@@ -37,7 +37,7 @@ acme,1200
 globex,500
 ```
 
-## Part 2: other currencies
+## Part 2: Other currencies
 
 ```
 rates    = ["EUR,110","GBP,125"]
@@ -51,7 +51,7 @@ acme,1300
 globex,125
 ```
 
-## Part 3: discounts
+## Part 3: Discounts
 
 Now `discounts` is filled too. A discount `customer,percent` takes `percent`% off that customer's total. It applies **after** the currency conversion.
 
@@ -79,7 +79,7 @@ Things to handle:
 - A discount outside `0..100` (for example `150`) is invalid. Ignore that line only.
 - A discount for a customer who has no valid invoice or refund line is ignored. It does not make the customer appear in the output.
 
-## Part 4: refunds
+## Part 4: Refunds
 
 Now `refunds` is filled too. A refund `customer,amount,currency` has the same format as an invoice, but it **subtracts** from what the customer owes. It is converted with the same rates.
 
