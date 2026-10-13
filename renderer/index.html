@@ -8,7 +8,11 @@
   </head>
   <body>
     <section class="menu" id="menu" aria-label="Problems">
-      <h1 class="menu-title">Dry Run</h1>
+      <div class="menu-header">
+        <h1 class="menu-title">Dry Run</h1>
+        <span class="menu-status" id="menu-status" role="status"></span>
+        <button class="menu-refresh" id="menu-refresh" type="button">Check for new problems</button>
+      </div>
       <ul class="problem-list" id="problem-list"></ul>
     </section>
     <section class="screen" id="screen" hidden>

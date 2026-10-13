@@ -16,6 +16,8 @@ const screenElement = document.getElementById('screen');
 const timerElement = document.getElementById('timer');
 const backButton = document.getElementById('back');
 const resetButton = document.getElementById('reset');
+const menuStatusElement = document.getElementById('menu-status');
+const menuRefreshButton = document.getElementById('menu-refresh');
 const screenTitleElement = document.getElementById('screen-title');
 const layout = document.getElementById('layout');
 const problemElement = document.getElementById('problem');
@@ -656,8 +658,64 @@ function renderMenu(problemList) {
   });
 }
 
+function escapeHtml(text) {
+  return createElement('span', undefined, text).innerHTML;
+}
+
+function configureMarkdown() {
+  globalThis.marked.use({
+    renderer: {
+      html({ text }) {
+        return escapeHtml(text);
+      },
+      image({ text }) {
+        return escapeHtml(text);
+      },
+      link({ tokens }) {
+        return this.parser.parseInline(tokens);
+      },
+    },
+  });
+}
+
+function describeSync(result) {
+  if (result.error) {
+    return 'Could not check for new problems';
+  }
+  const changeList = [];
+  if (result.added.length > 0) {
+    changeList.push(`${result.added.length} new`);
+  }
+  if (result.updated.length > 0) {
+    changeList.push(`${result.updated.length} updated`);
+  }
+  const failedText = result.failed.length > 0 ? `, ${result.failed.length} failed` : '';
+
+  return changeList.length > 0 ? `Problems: ${changeList.join(', ')}${failedText}` : `Problems are up to date${failedText}`;
+}
+
+async function syncProblemList() {
+  menuRefreshButton.disabled = true;
+  menuStatusElement.textContent = 'Checking for new problems...';
+  try {
+    const result = await globalThis.practice.syncProblems();
+    if (result.added.length > 0 || result.updated.length > 0) {
+      renderMenu(await globalThis.practice.list());
+    }
+    menuStatusElement.textContent = describeSync(result);
+  } catch (error) {
+    console.error('Problem sync failed', { error });
+    menuStatusElement.textContent = 'Could not check for new problems';
+  } finally {
+    menuRefreshButton.disabled = false;
+  }
+}
+
 async function start() {
+  configureMarkdown();
   renderMenu(await globalThis.practice.list());
+  menuRefreshButton.addEventListener('click', syncProblemList);
+  syncProblemList();
   backButton.addEventListener('click', backToMenu);
   resetButton.addEventListener('click', handleReset);
   globalThis.addEventListener('beforeunload', () => {

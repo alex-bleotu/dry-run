@@ -3,23 +3,81 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { loadTests, readMeta, runCustom, runTests } = require('./runner');
+const { MANIFEST_NAME, VERSION_FILE_NAME, syncProblems } = require('./updater');
 
-const PROBLEMS_DIRECTORY = path.join(__dirname, 'problems');
+const BUNDLED_DIRECTORY = path.join(__dirname, 'problems');
+const DOWNLOADED_DIRECTORY = path.join(app.getPath('userData'), 'problems');
+const APP_VERSION_PATH = path.join(DOWNLOADED_DIRECTORY, '.app-version');
 const SOLUTIONS_DIRECTORY = path.join(app.getPath('userData'), 'solutions');
+const DEFAULT_PROBLEMS_URL = 'https://raw.githubusercontent.com/alex-bleotu/dry-run/main/problems';
+const PROBLEMS_URL_PATTERN = /^(https:\/\/|http:\/\/127\.0\.0\.1[:/])/;
+const PROBLEM_ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
-function listProblemId() {
+let syncPromise = null;
+
+function resetDownloadedProblemsOnNewVersion() {
+  const previousVersion = fs.existsSync(APP_VERSION_PATH) ? fs.readFileSync(APP_VERSION_PATH, 'utf8') : null;
+  if (previousVersion !== app.getVersion()) {
+    fs.rmSync(DOWNLOADED_DIRECTORY, { force: true, recursive: true });
+    fs.mkdirSync(DOWNLOADED_DIRECTORY, { recursive: true });
+    fs.writeFileSync(APP_VERSION_PATH, app.getVersion());
+  }
+}
+
+function listDirectoryProblemId(directory) {
+  if (!fs.existsSync(directory)) {
+    return [];
+  }
+
   return fs
-    .readdirSync(PROBLEMS_DIRECTORY, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(PROBLEMS_DIRECTORY, entry.name, 'meta.json')))
+    .readdirSync(directory, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isDirectory() &&
+        PROBLEM_ID_PATTERN.test(entry.name) &&
+        fs.existsSync(path.join(directory, entry.name, 'meta.json')),
+    )
     .map((entry) => entry.name);
 }
 
+function listProblemId() {
+  return [...new Set([...listDirectoryProblemId(BUNDLED_DIRECTORY), ...listDirectoryProblemId(DOWNLOADED_DIRECTORY)])];
+}
+
 function getProblemDirectory(id) {
-  if (!listProblemId().includes(id)) {
-    throw new Error(`Unknown problem ${id}`);
+  if (listDirectoryProblemId(DOWNLOADED_DIRECTORY).includes(id)) {
+    return path.join(DOWNLOADED_DIRECTORY, id);
+  }
+  if (listDirectoryProblemId(BUNDLED_DIRECTORY).includes(id)) {
+    return path.join(BUNDLED_DIRECTORY, id);
   }
 
-  return path.join(PROBLEMS_DIRECTORY, id);
+  throw new Error(`Unknown problem ${id}`);
+}
+
+function readBundledVersion(id) {
+  const manifestPath = path.join(BUNDLED_DIRECTORY, MANIFEST_NAME);
+  if (!fs.existsSync(manifestPath)) {
+    return null;
+  }
+  const entry = JSON.parse(fs.readFileSync(manifestPath, 'utf8')).problems.find((problem) => problem.id === id);
+
+  return entry ? entry.version : null;
+}
+
+function getInstalledVersion(id) {
+  const versionPath = path.join(DOWNLOADED_DIRECTORY, id, VERSION_FILE_NAME);
+  if (fs.existsSync(versionPath)) {
+    return JSON.parse(fs.readFileSync(versionPath, 'utf8')).version;
+  }
+
+  return readBundledVersion(id);
+}
+
+function getProblemsUrl() {
+  const override = process.env.DRY_RUN_PROBLEMS_URL;
+
+  return override && PROBLEMS_URL_PATTERN.test(override) ? override.replace(/\/$/, '') : DEFAULT_PROBLEMS_URL;
 }
 
 function getSolutionPath(id) {
@@ -58,13 +116,31 @@ function createWindow() {
     width: 1500,
   });
   mainWindow.setMenuBarVisibility(false);
+  mainWindow.webContents.on('will-navigate', (event) => {
+    event.preventDefault();
+  });
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
+
+ipcMain.handle('app:sync-problems', () => {
+  if (!syncPromise) {
+    syncPromise = syncProblems({
+      baseUrl: getProblemsUrl(),
+      downloadedDirectory: DOWNLOADED_DIRECTORY,
+      getInstalledVersion,
+    }).finally(() => {
+      syncPromise = null;
+    });
+  }
+
+  return syncPromise;
+});
 
 ipcMain.handle('app:list', () =>
   listProblemId()
     .map((id) => {
-      const directory = path.join(PROBLEMS_DIRECTORY, id);
+      const directory = getProblemDirectory(id);
       const meta = readMeta(directory);
 
       return {
@@ -131,6 +207,7 @@ if (app.requestSingleInstanceLock()) {
     }
   });
   app.whenReady().then(() => {
+    resetDownloadedProblemsOnNewVersion();
     createWindow();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
