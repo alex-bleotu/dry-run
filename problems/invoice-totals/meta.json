@@ -1,0 +1,7 @@
+{
+  "difficulty": "Easy",
+  "inputKeys": ["invoices", "rates", "discounts", "refunds"],
+  "order": 3,
+  "summary": "Customer totals in USD from multi-currency invoices, with discounts and refunds.",
+  "title": "Invoice Totals"
+}

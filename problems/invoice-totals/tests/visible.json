@@ -1,0 +1,72 @@
+[
+  {
+    "expected": "acme,1200\nglobex,500",
+    "input": {
+      "invoices": [
+        "acme,1000,USD",
+        "globex,500,USD",
+        "acme,200,USD"
+      ]
+    },
+    "name": "Part 1 example",
+    "part": 1
+  },
+  {
+    "expected": "acme,1300\nglobex,125",
+    "input": {
+      "invoices": [
+        "acme,1000,EUR",
+        "acme,200,USD",
+        "globex,100,GBP"
+      ],
+      "rates": [
+        "EUR,110",
+        "GBP,125"
+      ]
+    },
+    "name": "Part 2 example",
+    "part": 2
+  },
+  {
+    "expected": "acme,1170\nglobex,125",
+    "input": {
+      "discounts": [
+        "acme,10"
+      ],
+      "invoices": [
+        "acme,1000,EUR",
+        "acme,200,USD",
+        "globex,100,GBP"
+      ],
+      "rates": [
+        "EUR,110",
+        "GBP,125"
+      ]
+    },
+    "name": "Part 3 example",
+    "part": 3
+  },
+  {
+    "expected": "acme,1071\nglobex,0",
+    "input": {
+      "discounts": [
+        "acme,10"
+      ],
+      "invoices": [
+        "acme,1000,EUR",
+        "acme,200,USD",
+        "globex,100,GBP"
+      ],
+      "rates": [
+        "EUR,110",
+        "GBP,125"
+      ],
+      "refunds": [
+        "acme,100,EUR",
+        "globex,500,USD"
+      ]
+    },
+    "name": "Part 4 example",
+    "part": 4
+  }
+]

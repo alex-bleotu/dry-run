@@ -1,0 +1,72 @@
+{
+  "name": "dry-run",
+  "productName": "Dry Run",
+  "description": "Timed C++ coding interview practice with hidden tests, in a desktop app.",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "author": "alex-bleotu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-bleotu/dry-run.git"
+  },
+  "main": "main.js",
+  "desktopName": "dry-run.desktop",
+  "scripts": {
+    "check": "node tools/check.js",
+    "dist:linux": "electron-builder --linux AppImage --publish never",
+    "dist:win": "electron-builder --win nsis --publish never",
+    "generate-tests": "node tools/generate-all.js",
+    "start": "electron . --no-sandbox"
+  },
+  "dependencies": {
+    "marked": "^18.1.1",
+    "monaco-editor": "^0.57.0"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "io.github.alexbleotu.dryrun",
+    "productName": "Dry Run",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "runner.js",
+      "icon.png",
+      "renderer/**/*",
+      "problems/**/*",
+      "!problems/**/solution.cpp",
+      "node_modules/marked/lib/marked.umd.js",
+      "node_modules/marked/package.json",
+      "node_modules/monaco-editor/min/**/*",
+      "node_modules/monaco-editor/package.json",
+      "!**/node_modules/monaco-editor/{dev,esm,min-maps}/**",
+      "!**/node_modules/marked/{bin,man}/**",
+      "!**/*.map",
+      "!**/node_modules/dompurify/src/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development",
+      "icon": "icon.png",
+      "artifactName": "dry-run-${version}-linux.${ext}",
+      "executableArgs": [
+        "--no-sandbox"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.png",
+      "artifactName": "dry-run-${version}-windows-setup.${ext}"
+    }
+  }
+}

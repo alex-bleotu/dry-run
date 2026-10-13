@@ -1,0 +1,4 @@
+node_modules/
+dist/
+problems/*/solution.cpp
+*.log

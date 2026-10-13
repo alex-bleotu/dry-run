@@ -1,0 +1,83 @@
+[
+  {
+    "expected": "user1,90\nuser2,30\nuser3,150",
+    "input": {
+      "subscriptions": [
+        "user1,sub_a,30",
+        "user1,sub_b,60",
+        "user2,sub_c,30",
+        "user3,sub_d,150"
+      ]
+    },
+    "name": "Part 1 example",
+    "part": 1
+  },
+  {
+    "expected": "user1,130\nuser2,75\nuser3,150",
+    "input": {
+      "changes": [
+        "user1,sub_a,sub_a_plus,11,60",
+        "user2,sub_c,sub_c_pro,16,120",
+        "user1,sub_a_plus,sub_a_pro,21,120"
+      ],
+      "subscriptions": [
+        "user1,sub_a,30",
+        "user1,sub_b,60",
+        "user2,sub_c,30",
+        "user3,sub_d,150"
+      ]
+    },
+    "name": "Part 2 example",
+    "part": 2
+  },
+  {
+    "expected": "user1,60\nuser2,75\nuser3,150",
+    "input": {
+      "cancellations": [
+        "user1,sub_b,6",
+        "user1,sub_a_pro,26",
+        "user3,sub_d,31"
+      ],
+      "changes": [
+        "user1,sub_a,sub_a_plus,11,60",
+        "user2,sub_c,sub_c_pro,16,120",
+        "user1,sub_a_plus,sub_a_pro,21,120"
+      ],
+      "subscriptions": [
+        "user1,sub_a,30",
+        "user1,sub_b,60",
+        "user2,sub_c,30",
+        "user3,sub_d,150"
+      ]
+    },
+    "name": "Part 3 example",
+    "part": 3
+  },
+  {
+    "expected": "user1,60\nuser2,138\nuser3,150\nuser4,6",
+    "input": {
+      "cancellations": [
+        "user1,sub_b,6",
+        "user1,sub_a_pro,26",
+        "user3,sub_d,31"
+      ],
+      "changes": [
+        "user1,sub_a,sub_a_plus,11,60",
+        "user2,sub_c,sub_c_pro,16,120",
+        "user1,sub_a_plus,sub_a_pro,21,120"
+      ],
+      "starts": [
+        "user2,sub_e,10,90",
+        "user4,sub_f,25,30"
+      ],
+      "subscriptions": [
+        "user1,sub_a,30",
+        "user1,sub_b,60",
+        "user2,sub_c,30",
+        "user3,sub_d,150"
+      ]
+    },
+    "name": "Part 4 example",
+    "part": 4
+  }
+]

@@ -1,0 +1,497 @@
+:root {
+  --background: #1e1e1e;
+  --panel: #252526;
+  --border: #3c3c3c;
+  --text: #d4d4d4;
+  --muted: #9da1a6;
+  --accent: #0e639c;
+  --accent-hover: #1177bb;
+  --pass: #3fb950;
+  --fail: #f85149;
+  --warn: #d29922;
+  --pass-background: #12361d;
+  --fail-background: #4a1d1d;
+  --problem-width: 40%;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-color: #4a4a4a transparent;
+  scrollbar-width: auto;
+}
+
+pre,
+pre.output {
+  scrollbar-width: thin;
+}
+
+html,
+body {
+  block-size: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.layout {
+  flex: 1;
+  min-block-size: 0;
+  display: grid;
+  grid-template-columns: var(--problem-width) 6px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.problem {
+  background: var(--panel);
+  overflow: auto;
+  padding: 16px 24px;
+}
+
+.splitter {
+  background: var(--border);
+  cursor: col-resize;
+}
+
+.splitter:hover {
+  background: var(--accent);
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+}
+
+.tabs {
+  background: var(--panel);
+  border-block-end: 1px solid var(--border);
+  display: flex;
+  flex: none;
+  gap: 4px;
+  padding: 4px 8px;
+}
+
+.tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 4px 12px;
+}
+
+.tab[aria-selected='true'] {
+  background: var(--background);
+  border-color: var(--border);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.editor {
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.bottom {
+  background: var(--panel);
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  flex: none;
+  flex-direction: column;
+}
+
+.bottom.is-open {
+  block-size: 40%;
+}
+
+.results,
+.custom {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-block-size: 0;
+}
+
+.results[hidden],
+.custom[hidden] {
+  display: none;
+}
+
+.custom {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.custom-inputs {
+  border-inline-end: 1px solid var(--border);
+  overflow: auto;
+  padding: 8px 16px 12px;
+}
+
+.custom-output {
+  overflow: auto;
+  padding: 8px 16px 12px;
+}
+
+.custom-label {
+  display: block;
+}
+
+.custom-input {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 13px;
+  inline-size: 100%;
+  line-height: 20px;
+  padding: 4px 8px;
+  resize: vertical;
+  white-space: pre;
+}
+
+.case-list {
+  border-inline-end: 1px solid var(--border);
+  list-style: none;
+  margin: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+.case-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-inline-start: 3px solid transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 8px;
+  inline-size: 100%;
+  padding: 6px 12px;
+  text-align: start;
+}
+
+.case-button:hover {
+  background: var(--background);
+}
+
+.case-button[aria-current='true'] {
+  background: var(--background);
+  border-inline-start-color: var(--accent);
+}
+
+.badge {
+  border-radius: 4px;
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 6px;
+}
+
+.badge-pass {
+  background: var(--pass-background);
+  color: var(--pass);
+}
+
+.badge-fail {
+  background: var(--fail-background);
+  color: var(--fail);
+}
+
+.badge-warn {
+  background: #3d3217;
+  color: var(--warn);
+}
+
+.case-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.case-tag {
+  color: var(--muted);
+  flex: none;
+  font-size: 12px;
+  margin-inline-start: auto;
+}
+
+.case-detail {
+  overflow: auto;
+  padding: 12px 16px;
+}
+
+.detail-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.detail-note {
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.detail-heading {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+  text-transform: uppercase;
+}
+
+.compare {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+pre.output {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0;
+  min-block-size: 32px;
+  overflow: auto;
+  padding: 8px 0;
+}
+
+.line {
+  display: block;
+  line-height: 20px;
+  min-block-size: 20px;
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.line-differs-expected {
+  background: var(--pass-background);
+}
+
+.line-differs-actual {
+  background: var(--fail-background);
+}
+
+.footer {
+  align-items: center;
+  flex: none;
+  background: var(--panel);
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+}
+
+.status {
+  color: var(--muted);
+  flex: 1;
+}
+
+.status-pass {
+  color: var(--pass);
+}
+
+.status-fail {
+  color: var(--fail);
+}
+
+.run {
+  background: var(--accent);
+  border: 0;
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 20px;
+}
+
+.run:hover {
+  background: var(--accent-hover);
+}
+
+.run:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.markdown h1,
+.markdown h2 {
+  border-block-end: 1px solid var(--border);
+  font-weight: 600;
+  padding-block-end: 4px;
+}
+
+.markdown code {
+  background: var(--background);
+  border-radius: 4px;
+  font-family: 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 13px;
+  padding: 0 4px;
+}
+
+.markdown pre {
+  line-height: 20px;
+  margin-block: 8px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: auto;
+  padding: 8px 12px;
+}
+
+.markdown pre code {
+  padding: 0;
+}
+
+.markdown table {
+  border-collapse: collapse;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  text-align: start;
+}
+
+.markdown details {
+  margin-block-end: 8px;
+}
+
+.markdown summary {
+  cursor: pointer;
+}
+
+.markdown summary h2 {
+  display: inline-block;
+  inline-size: calc(100% - 20px);
+  margin-block: 12px 8px;
+}
+
+.menu {
+  block-size: 100vh;
+  overflow: auto;
+  padding: 40px 48px;
+}
+
+.menu[hidden],
+.screen[hidden] {
+  display: none;
+}
+
+.menu-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 24px;
+}
+
+.problem-list {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.problem-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  inline-size: 100%;
+  padding: 20px;
+  text-align: start;
+}
+
+.problem-card:hover,
+.problem-card:focus-visible {
+  border-color: var(--accent);
+}
+
+.problem-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.problem-card-summary {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.problem-card-meta {
+  color: var(--muted);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+}
+
+.screen {
+  block-size: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  align-items: center;
+  background: var(--panel);
+  border-block-end: 1px solid var(--border);
+  display: flex;
+  flex: none;
+  gap: 16px;
+  padding: 4px 12px;
+  user-select: none;
+}
+
+.timer {
+  color: var(--muted);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.back,
+.reset {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  padding: 6px;
+}
+
+.back:hover,
+.reset:hover {
+  border-color: var(--accent);
+}
+
+.screen-title {
+  font-weight: 600;
+}
+
+.reset {
+  margin-inline-start: auto;
+}

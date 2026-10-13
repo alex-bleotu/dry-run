@@ -1,0 +1,80 @@
+[
+  {
+    "expected": "1,alice,ALLOWED\n2,alice,ALLOWED\n3,bob,ALLOWED\n4,alice,BLOCKED\n5,bob,ALLOWED",
+    "input": {
+      "config": [
+        "2,1000000"
+      ],
+      "requests": [
+        "1,alice",
+        "2,alice",
+        "3,bob",
+        "4,alice",
+        "5,bob"
+      ]
+    },
+    "name": "Part 1 example",
+    "part": 1
+  },
+  {
+    "expected": "1,alice,ALLOWED\n2,alice,ALLOWED\n3,alice,BLOCKED\n11,alice,ALLOWED\n12,alice,ALLOWED\n13,alice,BLOCKED",
+    "input": {
+      "config": [
+        "2,10"
+      ],
+      "requests": [
+        "1,alice",
+        "2,alice",
+        "3,alice",
+        "11,alice",
+        "12,alice",
+        "13,alice"
+      ]
+    },
+    "name": "Part 2 example",
+    "part": 2
+  },
+  {
+    "expected": "1,alice,ALLOWED\n2,bob,ALLOWED\n3,bob,BLOCKED\n4,carol,ALLOWED\n5,carol,ALLOWED\n6,carol,ALLOWED\n7,carol,BLOCKED\n8,alice,ALLOWED\n9,alice,BLOCKED",
+    "input": {
+      "config": [
+        "2,10"
+      ],
+      "overrides": [
+        "bob,1",
+        "carol,3"
+      ],
+      "requests": [
+        "1,alice",
+        "2,bob",
+        "3,bob",
+        "4,carol",
+        "5,carol",
+        "6,carol",
+        "7,carol",
+        "8,alice",
+        "9,alice"
+      ]
+    },
+    "name": "Part 3 example",
+    "part": 3
+  },
+  {
+    "expected": "1,dave,BLOCKED\n2,alice,ALLOWED\n3,dave,BLOCKED",
+    "input": {
+      "blocked": [
+        "dave"
+      ],
+      "config": [
+        "1,10"
+      ],
+      "requests": [
+        "1,dave",
+        "2,alice",
+        "3,dave"
+      ]
+    },
+    "name": "Part 4 example",
+    "part": 4
+  }
+]

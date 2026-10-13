@@ -1,0 +1,225 @@
+[
+  {
+    "expected": "1,a,ALLOWED\n2,a,ALLOWED\n3,b,ALLOWED",
+    "input": {
+      "requests": [
+        "1,a",
+        "2,a",
+        "3,b"
+      ]
+    },
+    "name": "no config allows everything",
+    "part": 1
+  },
+  {
+    "expected": "1,x,BLOCKED\n2,y,ALLOWED",
+    "input": {
+      "blocked": [
+        "x"
+      ],
+      "requests": [
+        "1,x",
+        "2,y"
+      ]
+    },
+    "name": "no config but blocked user",
+    "part": 4
+  },
+  {
+    "expected": "1,a,BLOCKED",
+    "input": {
+      "config": [
+        "0,10"
+      ],
+      "requests": [
+        "1,a"
+      ]
+    },
+    "name": "limit zero blocks all",
+    "part": 1
+  },
+  {
+    "expected": "1,a,BLOCKED\n2,b,ALLOWED",
+    "input": {
+      "config": [
+        "5,10"
+      ],
+      "overrides": [
+        "a,0"
+      ],
+      "requests": [
+        "1,a",
+        "2,b"
+      ]
+    },
+    "name": "override limit zero",
+    "part": 3
+  },
+  {
+    "expected": "5,a,ALLOWED\n5,a,BLOCKED\n6,a,ALLOWED\n6,a,BLOCKED\n7,a,ALLOWED",
+    "input": {
+      "config": [
+        "1,1"
+      ],
+      "requests": [
+        "5,a",
+        "5,a",
+        "6,a",
+        "6,a",
+        "7,a"
+      ]
+    },
+    "name": "window of one second",
+    "part": 2
+  },
+  {
+    "expected": "1,a,ALLOWED\n2,a,BLOCKED\n11,a,ALLOWED",
+    "input": {
+      "config": [
+        "1,10"
+      ],
+      "requests": [
+        "1,a",
+        "2,a",
+        "11,a"
+      ]
+    },
+    "name": "blocked requests are not counted",
+    "part": 2
+  },
+  {
+    "expected": "1,a,ALLOWED\n2,b,ALLOWED\n3,a,BLOCKED\n4,b,BLOCKED",
+    "input": {
+      "config": [
+        "1,100"
+      ],
+      "requests": [
+        "1,a",
+        "2,b",
+        "3,a",
+        "4,b"
+      ]
+    },
+    "name": "users are independent",
+    "part": 1
+  },
+  {
+    "expected": "1,vip,ALLOWED\n2,vip,ALLOWED\n3,vip,ALLOWED\n4,vip,BLOCKED\n5,a,ALLOWED\n6,a,BLOCKED",
+    "input": {
+      "config": [
+        "1,100"
+      ],
+      "overrides": [
+        "vip,3"
+      ],
+      "requests": [
+        "1,vip",
+        "2,vip",
+        "3,vip",
+        "4,vip",
+        "5,a",
+        "6,a"
+      ]
+    },
+    "name": "override above default",
+    "part": 3
+  },
+  {
+    "expected": "1,a,BLOCKED",
+    "input": {
+      "blocked": [
+        "a"
+      ],
+      "config": [
+        "5,10"
+      ],
+      "overrides": [
+        "a,5"
+      ],
+      "requests": [
+        "1,a"
+      ]
+    },
+    "name": "blocked user with override",
+    "part": 4
+  },
+  {
+    "expected": "1000000000000,a,ALLOWED\n1000000000001,a,ALLOWED\n1000000000002,a,BLOCKED\n1500000000001,a,ALLOWED",
+    "input": {
+      "config": [
+        "2,500000000000"
+      ],
+      "requests": [
+        "1000000000000,a",
+        "1000000000001,a",
+        "1000000000002,a",
+        "1500000000001,a"
+      ]
+    },
+    "name": "large timestamps",
+    "part": 2
+  },
+  {
+    "expected": "",
+    "input": {
+      "config": [
+        "2,10"
+      ],
+      "requests": []
+    },
+    "name": "no requests",
+    "part": 1
+  },
+  {
+    "expected": "1,a,ALLOWED\n2,a,ALLOWED\n3,a,ALLOWED\n4,a,BLOCKED",
+    "input": {
+      "config": [
+        "5,10"
+      ],
+      "overrides": [
+        "a,1",
+        "a,3"
+      ],
+      "requests": [
+        "1,a",
+        "2,a",
+        "3,a",
+        "4,a"
+      ]
+    },
+    "name": "last override wins",
+    "part": 3
+  },
+  {
+    "expected": "1,a,ALLOWED\n100,a,BLOCKED\n1,b,ALLOWED",
+    "input": {
+      "overrides": [
+        "a,1"
+      ],
+      "requests": [
+        "1,a",
+        "100,a",
+        "1,b"
+      ]
+    },
+    "name": "override without config",
+    "part": 3
+  },
+  {
+    "expected": "1,a,ALLOWED\n1,a,ALLOWED\n1,a,ALLOWED\n1,a,BLOCKED\n6,a,ALLOWED",
+    "input": {
+      "config": [
+        "3,5"
+      ],
+      "requests": [
+        "1,a",
+        "1,a",
+        "1,a",
+        "1,a",
+        "6,a"
+      ]
+    },
+    "name": "same timestamp burst",
+    "part": 2
+  }
+]

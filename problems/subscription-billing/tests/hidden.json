@@ -1,0 +1,452 @@
+[
+  {
+    "expected": "solo,7",
+    "input": {
+      "subscriptions": [
+        "solo,only,7"
+      ]
+    },
+    "name": "single user single sub",
+    "part": 1
+  },
+  {
+    "expected": "user1,3\nuser10,2\nuser2,5",
+    "input": {
+      "subscriptions": [
+        "user2,a,1",
+        "user10,b,2",
+        "user1,c,3",
+        "user2,d,4"
+      ]
+    },
+    "name": "users sorted as strings",
+    "part": 1
+  },
+  {
+    "expected": "big,6000000000",
+    "input": {
+      "subscriptions": [
+        "big,a,2000000000",
+        "big,b,2000000000",
+        "big,c,2000000000"
+      ]
+    },
+    "name": "sum exceeds 32 bits",
+    "part": 1
+  },
+  {
+    "expected": "u,50",
+    "input": {
+      "changes": [
+        "u,a,b,1,50"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "change on day 1 charges old for 0 days",
+    "part": 2
+  },
+  {
+    "expected": "u,11",
+    "input": {
+      "changes": [
+        "u,a,b,30,50"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "change on day 30",
+    "part": 2
+  },
+  {
+    "expected": "u,20",
+    "input": {
+      "changes": [
+        "u,a_pro,a_max,21,30",
+        "u,a,a_pro,11,20"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "changes given out of day order",
+    "part": 2
+  },
+  {
+    "expected": "u,10",
+    "input": {
+      "changes": [
+        "u,ghost,b,5,50"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "change of unknown sub ignored",
+    "part": 2
+  },
+  {
+    "expected": "u,44",
+    "input": {
+      "changes": [
+        "u,a,b,5,50",
+        "u,a,c,9,70"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "second change on replaced sub ignored",
+    "part": 2
+  },
+  {
+    "expected": "u,30",
+    "input": {
+      "changes": [
+        "u,a,b,5,50"
+      ],
+      "subscriptions": [
+        "u,a,10",
+        "u,b,20"
+      ]
+    },
+    "name": "change to existing sub id ignored",
+    "part": 2
+  },
+  {
+    "expected": "u,10\nv,1",
+    "input": {
+      "changes": [
+        "v,a,b,5,50"
+      ],
+      "subscriptions": [
+        "u,a,10",
+        "v,c,1"
+      ]
+    },
+    "name": "change by wrong user ignored",
+    "part": 2
+  },
+  {
+    "expected": "u,10",
+    "input": {
+      "changes": [
+        "u,a,b,31,50",
+        "u,a,c,0,50"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "change day outside period ignored",
+    "part": 2
+  },
+  {
+    "expected": "u,1933333333",
+    "input": {
+      "changes": [
+        "u,a,b,2,2000000000"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "total exceeds 32 bits",
+    "part": 2
+  },
+  {
+    "expected": "u,0",
+    "input": {
+      "cancellations": [
+        "u,a,2"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "total rounds down",
+    "part": 3
+  },
+  {
+    "expected": "u,5",
+    "input": {
+      "cancellations": [
+        "u,a,1"
+      ],
+      "subscriptions": [
+        "u,a,10",
+        "u,b,5"
+      ]
+    },
+    "name": "cancel on day 1",
+    "part": 3
+  },
+  {
+    "expected": "u,9",
+    "input": {
+      "cancellations": [
+        "u,a,30"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "cancel on day 30",
+    "part": 3
+  },
+  {
+    "expected": "u,10",
+    "input": {
+      "cancellations": [
+        "u,a,31"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "cancel on day 31 has no effect",
+    "part": 3
+  },
+  {
+    "expected": "u,1",
+    "input": {
+      "cancellations": [
+        "u,a,5"
+      ],
+      "changes": [
+        "u,a,b,10,20"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "change after cancel ignored",
+    "part": 3
+  },
+  {
+    "expected": "u,17",
+    "input": {
+      "cancellations": [
+        "u,a,12"
+      ],
+      "changes": [
+        "u,a,b,10,20"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "cancel of replaced sub ignored",
+    "part": 3
+  },
+  {
+    "expected": "u,3",
+    "input": {
+      "cancellations": [
+        "u,b,10"
+      ],
+      "changes": [
+        "u,a,b,10,20"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "cancel new sub same day as change",
+    "part": 3
+  },
+  {
+    "expected": "u,1",
+    "input": {
+      "cancellations": [
+        "u,a,5",
+        "u,a,8"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "second cancel ignored",
+    "part": 3
+  },
+  {
+    "expected": "u,10\nv,1",
+    "input": {
+      "cancellations": [
+        "v,a,5"
+      ],
+      "subscriptions": [
+        "u,a,10",
+        "v,b,1"
+      ]
+    },
+    "name": "cancel by wrong user ignored",
+    "part": 3
+  },
+  {
+    "expected": "u,10",
+    "input": {
+      "cancellations": [
+        "u,ghost,5"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "cancel of unknown sub ignored",
+    "part": 3
+  },
+  {
+    "expected": "u,15",
+    "input": {
+      "starts": [
+        "u,b,1,5"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "start on day 1",
+    "part": 4
+  },
+  {
+    "expected": "u,10",
+    "input": {
+      "starts": [
+        "u,a,10,99"
+      ],
+      "subscriptions": [
+        "u,a,10"
+      ]
+    },
+    "name": "start with existing id ignored",
+    "part": 4
+  },
+  {
+    "expected": "u,5",
+    "input": {
+      "changes": [
+        "u,b,c,10,7"
+      ],
+      "starts": [
+        "u,b,10,5"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "start then change same day",
+    "part": 4
+  },
+  {
+    "expected": "u,1",
+    "input": {
+      "cancellations": [
+        "u,b,10"
+      ],
+      "starts": [
+        "u,b,10,5"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "start then cancel same day",
+    "part": 4
+  },
+  {
+    "expected": "late,3\nu,1",
+    "input": {
+      "starts": [
+        "late,x,10,5"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "user appears from start only",
+    "part": 4
+  },
+  {
+    "expected": "u,1",
+    "input": {
+      "starts": [
+        "late,x,31,5"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "start on day 31 ignored",
+    "part": 4
+  },
+  {
+    "expected": "u,4",
+    "input": {
+      "cancellations": [
+        "u,b,5"
+      ],
+      "starts": [
+        "u,b,10,5"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "cancel before start ignored",
+    "part": 4
+  },
+  {
+    "expected": "u,0",
+    "input": {
+      "cancellations": [
+        "u,a,30"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "cancel on day 30 is not active",
+    "part": 4
+  },
+  {
+    "expected": "u,6",
+    "input": {
+      "changes": [
+        "u,c,d,20,4"
+      ],
+      "starts": [
+        "u,c,2,3",
+        "u,b,3,1"
+      ],
+      "subscriptions": [
+        "u,z,1",
+        "u,a,1"
+      ]
+    },
+    "name": "start then change chain",
+    "part": 4
+  },
+  {
+    "expected": "u,1\nv,0",
+    "input": {
+      "cancellations": [
+        "u,a_plus,25",
+        "v,w,3"
+      ],
+      "changes": [
+        "u,a,a_plus,10,2"
+      ],
+      "starts": [
+        "v,w,2,9"
+      ],
+      "subscriptions": [
+        "u,a,1"
+      ]
+    },
+    "name": "all subs ended still listed",
+    "part": 4
+  }
+]

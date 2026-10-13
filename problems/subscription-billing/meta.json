@@ -1,0 +1,7 @@
+{
+  "difficulty": "Medium",
+  "inputKeys": ["subscriptions", "changes", "cancellations", "starts"],
+  "order": 1,
+  "summary": "Prorated monthly subscription charges with plan changes, cancellations and mid-period starts.",
+  "title": "Subscription Billing"
+}

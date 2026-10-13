@@ -1,0 +1,7 @@
+{
+  "difficulty": "Easy",
+  "inputKeys": ["config", "overrides", "blocked", "requests"],
+  "order": 2,
+  "summary": "Allow or block API requests with a per-user sliding window limit, overrides and a blocklist.",
+  "title": "Rate Limiter"
+}

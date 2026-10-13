@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dry Run</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="menu" id="menu" aria-label="Problems">
+      <h1 class="menu-title">Dry Run</h1>
+      <ul class="problem-list" id="problem-list"></ul>
+    </section>
+    <section class="screen" id="screen" hidden>
+      <header class="topbar">
+        <button class="back" id="back" type="button" aria-label="Back to problems" title="Back to problems">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3 L5 8 L10 13"></path>
+          </svg>
+        </button>
+        <span class="screen-title" id="screen-title"></span>
+        <span class="timer" id="timer" role="timer" aria-label="Elapsed time">00:00</span>
+        <button class="reset" id="reset" type="button" aria-label="Reset problem" title="Reset code and timer">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+        </button>
+      </header>
+    <main class="layout" id="layout">
+      <section class="problem markdown" id="problem" aria-label="Problem"></section>
+      <div
+        class="splitter"
+        id="splitter"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize problem panel"
+      ></div>
+      <section class="workspace" aria-label="Workspace">
+        <nav class="tabs" role="tablist" aria-label="Files">
+          <button class="tab" type="button" role="tab" aria-selected="true">main</button>
+        </nav>
+        <div class="editor" id="editor"></div>
+        <section class="bottom" id="bottom" aria-label="Output">
+          <div class="tabs" role="tablist" aria-label="Output views">
+            <button class="tab" id="view-tests" type="button" role="tab" aria-selected="true">Tests</button>
+            <button class="tab" id="view-custom" type="button" role="tab" aria-selected="false">Custom</button>
+          </div>
+          <div class="results" id="results" hidden aria-live="polite">
+            <ul class="case-list" id="case-list"></ul>
+            <div class="case-detail" id="case-detail"></div>
+          </div>
+          <div class="custom" id="custom" hidden>
+            <div class="custom-inputs" id="custom-inputs"></div>
+            <div class="custom-output" id="custom-output" aria-live="polite"></div>
+          </div>
+        </section>
+        <footer class="footer">
+          <span class="status" id="status" role="status"></span>
+          <button class="run" id="run" type="button">Run tests (Ctrl+Enter)</button>
+        </footer>
+      </section>
+    </main>
+    </section>
+    <script src="../node_modules/marked/lib/marked.umd.js"></script>
+    <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>
