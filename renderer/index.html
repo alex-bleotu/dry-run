@@ -8,60 +8,134 @@
   </head>
   <body>
     <section class="menu" id="menu" aria-label="Problems">
-      <h1 class="menu-title">Dry Run</h1>
-      <ul class="problem-list" id="problem-list"></ul>
+      <div class="menu-inner">
+        <header class="menu-header">
+          <svg class="brand-logo" aria-hidden="true" width="44" height="44" viewBox="0 0 256 256">
+            <defs>
+              <linearGradient id="logo-background" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#635bff" />
+                <stop offset="1" stop-color="#3b2fd9" />
+              </linearGradient>
+            </defs>
+            <rect width="256" height="256" rx="56" fill="url(#logo-background)" />
+            <path d="M104 88 L64 128 L104 168" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M152 88 L192 128 L152 168" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="128" cy="128" r="12" fill="#ffd166" />
+          </svg>
+          <div>
+            <h1 class="menu-title">Dry Run</h1>
+            <p class="menu-subtitle">Timed C++ interview practice. Pick a problem and the clock starts.</p>
+          </div>
+        </header>
+        <h2 class="section-label" id="problem-count">Problems</h2>
+        <ul class="problem-list" id="problem-list"></ul>
+      </div>
     </section>
     <section class="screen" id="screen" hidden>
       <header class="topbar">
-        <button class="back" id="back" type="button" aria-label="Back to problems" title="Back to problems">
+        <button class="icon-button" id="back" type="button" aria-label="Back to problems" title="Back to problems">
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10 3 L5 8 L10 13"></path>
           </svg>
         </button>
+        <span class="topbar-divider" aria-hidden="true"></span>
         <span class="screen-title" id="screen-title"></span>
-        <span class="timer" id="timer" role="timer" aria-label="Elapsed time">00:00</span>
-        <button class="reset" id="reset" type="button" aria-label="Reset problem" title="Reset code and timer">
+        <span class="pill" id="screen-difficulty"></span>
+        <span class="timer" id="timer-pill">
+          <span class="timer-dot" aria-hidden="true"></span>
+          <span id="timer" role="timer" aria-label="Elapsed time">00:00</span>
+        </span>
+        <button class="icon-button" id="reset" type="button" aria-label="Reset problem" title="Reset code and timer">
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
           </svg>
         </button>
       </header>
-    <main class="layout" id="layout">
-      <section class="problem markdown" id="problem" aria-label="Problem"></section>
-      <div
-        class="splitter"
-        id="splitter"
-        role="separator"
-        aria-orientation="vertical"
-        aria-label="Resize problem panel"
-      ></div>
-      <section class="workspace" aria-label="Workspace">
-        <nav class="tabs" role="tablist" aria-label="Files">
-          <button class="tab" type="button" role="tab" aria-selected="true">main</button>
-        </nav>
-        <div class="editor" id="editor"></div>
-        <section class="bottom" id="bottom" aria-label="Output">
-          <div class="tabs" role="tablist" aria-label="Output views">
-            <button class="tab" id="view-tests" type="button" role="tab" aria-selected="true">Tests</button>
-            <button class="tab" id="view-custom" type="button" role="tab" aria-selected="false">Custom</button>
+      <main class="layout" id="layout">
+        <section class="panel" aria-label="Problem">
+          <div class="panel-header">
+            <span class="panel-label">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 3v5h5M9 13h6M9 17h6"></path>
+              </svg>
+              Description
+            </span>
           </div>
-          <div class="results" id="results" hidden aria-live="polite">
-            <ul class="case-list" id="case-list"></ul>
-            <div class="case-detail" id="case-detail"></div>
-          </div>
-          <div class="custom" id="custom" hidden>
-            <div class="custom-inputs" id="custom-inputs"></div>
-            <div class="custom-output" id="custom-output" aria-live="polite"></div>
-          </div>
+          <div class="problem markdown" id="problem"></div>
         </section>
-        <footer class="footer">
-          <span class="status" id="status" role="status"></span>
-          <button class="run" id="run" type="button">Run tests (Ctrl+Enter)</button>
-        </footer>
-      </section>
-    </main>
+        <div
+          class="splitter"
+          id="splitter"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize problem panel"
+        ></div>
+        <section class="workspace" aria-label="Workspace">
+          <section class="panel editor-panel" aria-label="Editor">
+            <div class="panel-header">
+              <span class="panel-label">
+                <span class="file-badge" aria-hidden="true">C++</span>
+                solution.cpp
+              </span>
+              <span class="panel-hint">g++ -std=c++17 -Wall -Wextra -Werror -O2</span>
+            </div>
+            <div class="editor" id="editor"></div>
+          </section>
+          <section class="panel bottom" id="bottom" aria-label="Output">
+            <div class="panel-header">
+              <div class="segmented" role="tablist" aria-label="Output views">
+                <button class="segment" id="view-tests" type="button" role="tab" aria-selected="true">Tests</button>
+                <button class="segment" id="view-custom" type="button" role="tab" aria-selected="false">Custom</button>
+              </div>
+              <span class="status" id="status" role="status"></span>
+              <button class="run" id="run" type="button" aria-keyshortcuts="Control+Enter">
+                <svg class="run-icon" aria-hidden="true" width="12" height="12" viewBox="0 0 12 12">
+                  <path d="M3 1.8v8.4a.6.6 0 0 0 .9.5l6.6-4.2a.6.6 0 0 0 0-1L3.9 1.3a.6.6 0 0 0-.9.5z" fill="currentColor"></path>
+                </svg>
+                <span class="spinner run-spinner" aria-hidden="true"></span>
+                <span id="run-label">Run tests</span>
+                <kbd class="run-shortcut" aria-hidden="true">
+                  Ctrl
+                  <svg aria-hidden="true" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 3v5a2 2 0 0 1-2 2H3"></path>
+                    <path d="M6 7l-3 3 3 3"></path>
+                  </svg>
+                </kbd>
+              </button>
+            </div>
+            <div class="results" id="results" hidden aria-live="polite">
+              <div class="case-sidebar">
+                <div class="case-summary" id="case-summary"></div>
+                <ul class="case-list" id="case-list"></ul>
+              </div>
+              <div class="case-detail" id="case-detail"></div>
+            </div>
+            <div class="custom" id="custom" hidden>
+              <div class="custom-inputs" id="custom-inputs"></div>
+              <div class="custom-output" id="custom-output" aria-live="polite"></div>
+            </div>
+          </section>
+        </section>
+      </main>
     </section>
+    <dialog class="dialog" id="confirm-dialog" aria-labelledby="confirm-title">
+      <form method="dialog">
+        <div class="dialog-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+        </div>
+        <h2 class="dialog-title" id="confirm-title">Reset this problem?</h2>
+        <p class="dialog-text">Your code goes back to the starter and the timer restarts from zero. This cannot be undone.</p>
+        <div class="dialog-actions">
+          <button class="button" type="submit" value="cancel" autofocus>Cancel</button>
+          <button class="button button-danger" type="submit" value="confirm">Reset problem</button>
+        </div>
+      </form>
+    </dialog>
     <script src="../node_modules/marked/lib/marked.umd.js"></script>
     <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
     <script src="renderer.js"></script>

@@ -1,22 +1,112 @@
+const ICON_PATH = {
+  arrow: ['M3 8h10', 'M9 4l4 4-4 4'],
+  check: ['M3.5 8.5l3 3 6-7'],
+  clock: ['M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z', 'M8 4.5V8l2.5 1.5'],
+  cross: ['M4.5 4.5l7 7', 'M11.5 4.5l-7 7'],
+  flask: [
+    'M6 1.5h4',
+    'M6.5 1.5v4L2.8 12.4a1.4 1.4 0 0 0 1.2 2.1h8a1.4 1.4 0 0 0 1.2-2.1L9.5 5.5v-4',
+    'M4.4 9.5h7.2',
+  ],
+  lock: [
+    'M4 7.5h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z',
+    'M5.5 7.5V5a2.5 2.5 0 0 1 5 0v2.5',
+  ],
+  warning: ['M8 4v5', 'M8 11.5v.5'],
+};
 const STATUS_BADGE = {
-  error: { className: 'badge-warn', text: 'ERROR' },
-  fail: { className: 'badge-fail', text: 'FAIL' },
-  pass: { className: 'badge-pass', text: 'PASS' },
-  timeout: { className: 'badge-warn', text: 'TIMEOUT' },
+  error: { className: 'badge-warn', icon: 'warning', tone: 'warn', text: 'ERROR' },
+  fail: { className: 'badge-fail', icon: 'cross', tone: 'fail', text: 'FAIL' },
+  pass: { className: 'badge-pass', icon: 'check', tone: 'pass', text: 'PASS' },
+  timeout: { className: 'badge-warn', icon: 'clock', tone: 'warn', text: 'TIMEOUT' },
 };
 const SAVE_DELAY_MS = 500;
 const CUSTOM_STORAGE_PREFIX = 'practice.custom-input.';
 const TIMER_INTERVAL_MS = 1000;
 const ELAPSED_STORAGE_PREFIX = 'practice.elapsed.';
-const RESET_CONFIRMATION = 'Reset this problem? Your code and timer will be cleared.';
+const EDITOR_THEME_NAME = 'dry-run';
+const EDITOR_FONT_FAMILY = "'JetBrains Mono Variable', 'DejaVu Sans Mono', 'Liberation Mono', monospace";
+const TYPE_KEYWORD_LIST = [
+  'auto',
+  'bool',
+  'char',
+  'double',
+  'float',
+  'int',
+  'long',
+  'short',
+  'signed',
+  'unsigned',
+  'void',
+];
+const EDITOR_THEME = {
+  base: 'vs-dark',
+  colors: {
+    'editor.background': '#11131a',
+    'editor.findMatchBackground': '#ffd16640',
+    'editor.findMatchHighlightBackground': '#ffd16620',
+    'editor.foldBackground': '#635bff14',
+    'editor.foreground': '#e7e9f0',
+    'editor.inactiveSelectionBackground': '#635bff26',
+    'editor.lineHighlightBackground': '#171a23',
+    'editor.lineHighlightBorder': '#00000000',
+    'editor.selectionBackground': '#635bff47',
+    'editor.selectionHighlightBackground': '#635bff1f',
+    'editor.wordHighlightBackground': '#ffffff10',
+    'editorBracketHighlight.foreground1': '#c4b5fd',
+    'editorBracketHighlight.foreground2': '#ffd166',
+    'editorBracketHighlight.foreground3': '#7dd3fc',
+    'editorBracketMatch.background': '#635bff26',
+    'editorBracketMatch.border': '#635bff80',
+    'editorCursor.foreground': '#a9a4ff',
+    'editorGutter.background': '#11131a',
+    'editorHoverWidget.background': '#171a23',
+    'editorHoverWidget.border': '#30364a',
+    'editorIndentGuide.activeBackground1': '#353b52',
+    'editorIndentGuide.background1': '#1f2330',
+    'editorLineNumber.activeForeground': '#a9a4ff',
+    'editorLineNumber.foreground': '#3a4054',
+    'editorOverviewRuler.border': '#00000000',
+    'editorSuggestWidget.background': '#171a23',
+    'editorSuggestWidget.border': '#30364a',
+    'editorSuggestWidget.selectedBackground': '#635bff33',
+    'editorWhitespace.foreground': '#2a2f40',
+    'editorWidget.background': '#171a23',
+    'editorWidget.border': '#30364a',
+    focusBorder: '#635bff',
+    'input.background': '#0c0e14',
+    'input.border': '#30364a',
+    'scrollbar.shadow': '#00000000',
+    'scrollbarSlider.activeBackground': '#ffffff33',
+    'scrollbarSlider.background': '#ffffff14',
+    'scrollbarSlider.hoverBackground': '#ffffff24',
+    'widget.shadow': '#00000080',
+  },
+  inherit: true,
+  rules: [
+    { fontStyle: 'italic', foreground: '5f6679', token: 'comment' },
+    { foreground: 'c4a7ff', token: 'keyword' },
+    ...TYPE_KEYWORD_LIST.map((keyword) => ({ foreground: '7dd3fc', token: `keyword.${keyword}` })),
+    { foreground: 'ffd166', token: 'keyword.directive' },
+    { foreground: '9ee6b8', token: 'string' },
+    { foreground: 'ffb37a', token: 'number' },
+    { foreground: 'e7e9f0', token: 'identifier' },
+    { foreground: '8d94a8', token: 'delimiter' },
+    { foreground: '8ab4ff', token: 'operator' },
+    { foreground: 'ffd166', token: 'annotation' },
+  ],
+};
 
 const menuElement = document.getElementById('menu');
 const problemListElement = document.getElementById('problem-list');
+const problemCountElement = document.getElementById('problem-count');
 const screenElement = document.getElementById('screen');
 const timerElement = document.getElementById('timer');
 const backButton = document.getElementById('back');
 const resetButton = document.getElementById('reset');
 const screenTitleElement = document.getElementById('screen-title');
+const screenDifficultyElement = document.getElementById('screen-difficulty');
+const confirmDialog = document.getElementById('confirm-dialog');
 const layout = document.getElementById('layout');
 const problemElement = document.getElementById('problem');
 const splitter = document.getElementById('splitter');
@@ -27,12 +117,15 @@ const resultsElement = document.getElementById('results');
 const customElement = document.getElementById('custom');
 const customInputsElement = document.getElementById('custom-inputs');
 const customOutputElement = document.getElementById('custom-output');
+const caseSummaryElement = document.getElementById('case-summary');
 const caseListElement = document.getElementById('case-list');
 const caseDetailElement = document.getElementById('case-detail');
 const statusElement = document.getElementById('status');
 const runButton = document.getElementById('run');
+const runLabelElement = document.getElementById('run-label');
 
 let editor = null;
+let problemList = [];
 let currentProblem = null;
 let inputKeyList = [];
 let timerHandle = null;
@@ -57,18 +150,55 @@ function createElement(tagName, className, text) {
   return element;
 }
 
+function createIcon(name, size = 12) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('height', String(size));
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('stroke-width', '1.8');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('width', String(size));
+  ICON_PATH[name].forEach((pathData) => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
+function createStatusIcon(status) {
+  const badge = STATUS_BADGE[status];
+  const icon = createElement('span', `status-icon status-icon-${badge.tone}`);
+  icon.appendChild(createIcon(badge.icon, 11));
+
+  return icon;
+}
+
+function createBadge(status) {
+  const badge = STATUS_BADGE[status];
+  const element = createElement('span', `badge ${badge.className}`);
+  element.append(createStatusIcon(status), badge.text);
+
+  return element;
+}
+
 function groupProblemParts() {
   const childList = [...problemElement.children];
   let section = null;
   childList.forEach((child) => {
-    const match = child.tagName === 'H2' ? /^Part (\d)/.exec(child.textContent) : null;
+    const match = child.tagName === 'H2' ? /^Part (\d+):?\s*/.exec(child.textContent) : null;
     if (match) {
       section = createElement('details');
       section.open = true;
       section.dataset.part = match[1];
       const summary = createElement('summary');
       problemElement.insertBefore(section, child);
-      summary.appendChild(child);
+      child.textContent = child.textContent.slice(match[0].length) || child.textContent;
+      summary.append(createElement('span', 'part-badge', `Part ${match[1]}`), child);
       section.appendChild(summary);
 
       return;
@@ -110,14 +240,18 @@ function findDifferingLines(expected, actual) {
 }
 
 function renderInput(container, input) {
+  const grid = createElement('div', 'input-grid');
   inputKeyList.forEach((key) => {
     const lineList = input[key] || [];
     if (lineList.length === 0) {
       return;
     }
-    container.appendChild(createElement('div', 'detail-heading', key));
-    container.appendChild(renderLines(lineList.join('\n'), new Set(), ''));
+    const column = createElement('div');
+    column.appendChild(createElement('div', 'detail-heading', key));
+    column.appendChild(renderLines(lineList.join('\n'), new Set(), ''));
+    grid.appendChild(column);
   });
+  container.appendChild(grid);
 }
 
 function renderDetail() {
@@ -127,15 +261,20 @@ function renderDetail() {
     return;
   }
 
-  const badge = STATUS_BADGE[result.status];
   const title = createElement('h3', 'detail-title');
-  title.append(`${result.name} `, createElement('span', `badge ${badge.className}`, badge.text));
+  title.append(createBadge(result.status), result.name);
+  if (result.label) {
+    title.appendChild(createElement('span', 'detail-label', result.label));
+  }
   caseDetailElement.appendChild(title);
 
   if (result.isHidden) {
-    caseDetailElement.appendChild(
-      createElement('p', 'detail-note', 'This test is hidden. Its input and expected output are not shown.'),
+    const note = createElement('div', 'hidden-note');
+    note.append(
+      createIcon('lock', 20),
+      createElement('span', undefined, 'This test is hidden. Its input and expected output are not shown.'),
     );
+    caseDetailElement.appendChild(note);
 
     return;
   }
@@ -156,25 +295,40 @@ function renderDetail() {
   expectedColumn.appendChild(createElement('div', 'detail-heading', 'Expected'));
   expectedColumn.appendChild(renderLines(result.expected, expectedSet, 'line-differs-expected'));
   const actualColumn = createElement('div');
-  actualColumn.appendChild(createElement('div', 'detail-heading', 'Actual'));
+  actualColumn.appendChild(createElement('div', 'detail-heading', 'Your output'));
   actualColumn.appendChild(renderLines(result.actual, actualSet, 'line-differs-actual'));
   compare.append(expectedColumn, actualColumn);
   caseDetailElement.appendChild(compare);
 }
 
+function renderCaseSummary() {
+  const passedCount = resultList.filter((result) => result.status === 'pass').length;
+  const text = createElement('div', 'case-summary-text');
+  text.append(
+    createElement('span', 'case-summary-count', `${passedCount}/${resultList.length}`),
+    createElement('span', 'case-summary-label', 'tests passed'),
+  );
+  const bar = createElement('div', 'case-summary-bar');
+  resultList.forEach((result) => {
+    const { tone } = STATUS_BADGE[result.status];
+    bar.appendChild(createElement('span', `case-summary-segment case-summary-segment-${tone}`));
+  });
+  caseSummaryElement.replaceChildren(text, bar);
+}
+
 function renderCaseList() {
+  renderCaseSummary();
   caseListElement.replaceChildren();
   resultList.forEach((result, index) => {
-    const badge = STATUS_BADGE[result.status];
     const item = createElement('li');
     const button = createElement('button', 'case-button');
     button.type = 'button';
     button.setAttribute('aria-current', String(index === selectedIndex));
-    button.append(
-      createElement('span', `badge ${badge.className}`, badge.text),
-      createElement('span', 'case-name', result.name),
-      createElement('span', 'case-tag', result.isHidden ? 'hidden' : ''),
-    );
+    const tag = createElement('span', 'case-tag');
+    if (result.isHidden) {
+      tag.append(createIcon('lock', 11), 'hidden');
+    }
+    button.append(createStatusIcon(result.status), createElement('span', 'case-name', result.name), tag);
     button.addEventListener('click', () => {
       selectedIndex = index;
       renderCaseList();
@@ -185,12 +339,21 @@ function renderCaseList() {
   });
 }
 
+function renderCompileErrorBox(container, output) {
+  const box = createElement('div', 'compile-error');
+  const title = createElement('h3', 'detail-title');
+  title.append(createStatusIcon('fail'), 'Compile error');
+  box.append(title, renderLines(output.trimEnd(), new Set(), ''));
+  container.appendChild(box);
+}
+
 function renderCompileError(output) {
   resultList = [];
+  caseSummaryElement.replaceChildren();
   caseListElement.replaceChildren();
   caseDetailElement.replaceChildren();
-  caseDetailElement.appendChild(createElement('h3', 'detail-title', 'Compile error'));
-  caseDetailElement.appendChild(renderLines(output.trimEnd(), new Set(), ''));
+  renderCompileErrorBox(caseDetailElement, output);
+  resultsElement.classList.add('has-compile-error');
   hasResults = true;
   applyView();
 }
@@ -204,6 +367,7 @@ function showResults(runOutput) {
     return;
   }
 
+  resultsElement.classList.remove('has-compile-error');
   resultList = runOutput.resultList;
   const failedIndex = resultList.findIndex((result) => result.status !== 'pass');
   selectedIndex = failedIndex === -1 ? 0 : failedIndex;
@@ -222,7 +386,7 @@ function applyView() {
   resultsElement.hidden = !(isTests && hasResults);
   customElement.hidden = isTests;
   bottomElement.classList.toggle('is-open', !isTests || hasResults);
-  runButton.textContent = isTests ? 'Run tests (Ctrl+Enter)' : 'Run custom (Ctrl+Enter)';
+  runLabelElement.textContent = isTests ? 'Run tests' : 'Run custom';
   statusElement.textContent = '';
 }
 
@@ -297,8 +461,7 @@ function setupCustomInputs(defaultInput) {
 function showCustomOutput(output) {
   customOutputElement.replaceChildren();
   if (output.compileError !== null) {
-    customOutputElement.appendChild(createElement('h3', 'detail-title', 'Compile error'));
-    customOutputElement.appendChild(renderLines(output.compileError.trimEnd(), new Set(), ''));
+    renderCompileErrorBox(customOutputElement, output.compileError);
     statusElement.className = 'status status-fail';
     statusElement.textContent = 'Compile error';
 
@@ -327,7 +490,7 @@ async function handleRun() {
   }
 
   runButton.disabled = true;
-  statusElement.className = 'status';
+  statusElement.className = 'status status-running';
   statusElement.textContent = 'Compiling and running...';
   try {
     if (activeView === 'custom') {
@@ -372,11 +535,20 @@ function handleEditorChange() {
 function setupSplitter() {
   splitter.addEventListener('pointerdown', (event) => {
     splitter.setPointerCapture(event.pointerId);
+    splitter.classList.add('is-dragging');
+    document.body.classList.add('is-resizing');
+    const panelLeft = splitter.previousElementSibling.getBoundingClientRect().left;
+    const grabOffset = event.clientX - splitter.getBoundingClientRect().left;
     const handleMove = (moveEvent) => {
-      const width = Math.min(Math.max(moveEvent.clientX, 240), globalThis.innerWidth - 400);
+      const width = Math.min(
+        Math.max(moveEvent.clientX - grabOffset - panelLeft, 240),
+        globalThis.innerWidth - 400,
+      );
       layout.style.setProperty('--problem-width', `${width}px`);
     };
     const handleUp = () => {
+      splitter.classList.remove('is-dragging');
+      document.body.classList.remove('is-resizing');
       splitter.removeEventListener('pointermove', handleMove);
       splitter.removeEventListener('pointerup', handleUp);
     };
@@ -462,6 +634,7 @@ function loadMonaco() {
         globalThis.monaco.languages.registerFoldingRangeProvider('cpp', {
           provideFoldingRanges: findFoldingRangeList,
         });
+        globalThis.monaco.editor.defineTheme(EDITOR_THEME_NAME, EDITOR_THEME);
         resolve(globalThis.monaco);
       });
     });
@@ -473,20 +646,38 @@ function loadMonaco() {
 function createEditor(monaco, model) {
   const createdEditor = monaco.editor.create(document.getElementById('editor'), {
     automaticLayout: true,
-    fontFamily: "'DejaVu Sans Mono', 'Liberation Mono', monospace",
+    cursorBlinking: 'smooth',
+    cursorSmoothCaretAnimation: 'on',
+    fontFamily: EDITOR_FONT_FAMILY,
     fontLigatures: false,
     fontSize: 14,
+    hideCursorInOverviewRuler: true,
     lineHeight: 22,
     minimap: { enabled: false },
     model,
+    overviewRulerBorder: false,
+    padding: { top: 12 },
+    renderLineHighlight: 'all',
     scrollBeyondLastLine: false,
+    scrollbar: { horizontalScrollbarSize: 10, useShadows: false, verticalScrollbarSize: 10 },
     showFoldingControls: 'always',
-    theme: 'vs-dark',
+    smoothScrolling: true,
+    theme: EDITOR_THEME_NAME,
   });
   createdEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, handleRun);
-  document.fonts.ready.then(() => monaco.editor.remeasureFonts());
+  document.fonts.load(`14px ${EDITOR_FONT_FAMILY}`).then(() => monaco.editor.remeasureFonts());
 
   return createdEditor;
+}
+
+function colorizeProblemCode(monaco) {
+  problemElement.querySelectorAll('pre > code.language-cpp').forEach((code) => {
+    code.textContent = code.textContent.replace(/\n$/, '');
+    code.dataset.lang = 'cpp';
+    monaco.editor.colorizeElement(code, { theme: EDITOR_THEME_NAME }).catch((error) => {
+      console.error('Could not colorize code block', { error });
+    });
+  });
 }
 
 function formatElapsed(totalSeconds) {
@@ -551,6 +742,8 @@ function resetResults() {
   hasResults = false;
   selectedIndex = 0;
   activeView = 'tests';
+  resultsElement.classList.remove('has-compile-error');
+  caseSummaryElement.replaceChildren();
   caseListElement.replaceChildren();
   caseDetailElement.replaceChildren();
   customOutputElement.replaceChildren();
@@ -565,6 +758,8 @@ async function openProblem(id) {
   menuElement.hidden = true;
   screenElement.hidden = false;
   screenTitleElement.textContent = data.title;
+  screenDifficultyElement.className = `pill pill-${String(data.difficulty).toLowerCase()}`;
+  screenDifficultyElement.textContent = data.difficulty || '';
   problemElement.innerHTML = globalThis.marked.parse(data.problem);
   groupProblemParts();
   problemElement.scrollTop = 0;
@@ -573,6 +768,7 @@ async function openProblem(id) {
   applyView();
 
   const monaco = await loadMonaco();
+  colorizeProblemCode(monaco);
   const model = monaco.editor.createModel(data.code, 'cpp');
   model.onDidChangeContent(handleEditorChange);
   if (editor) {
@@ -586,8 +782,18 @@ async function openProblem(id) {
   startTimer(loadElapsedMs(id));
 }
 
+function confirmReset() {
+  return new Promise((resolve) => {
+    confirmDialog.returnValue = '';
+    confirmDialog.addEventListener('close', () => resolve(confirmDialog.returnValue === 'confirm'), {
+      once: true,
+    });
+    confirmDialog.showModal();
+  });
+}
+
 async function handleReset() {
-  if (!currentProblem || !globalThis.confirm(RESET_CONFIRMATION)) {
+  if (!currentProblem || !(await confirmReset())) {
     return;
   }
 
@@ -624,22 +830,43 @@ async function backToMenu() {
   }
   stopTimer();
   currentProblem = null;
+  renderMenu();
   screenElement.hidden = true;
   menuElement.hidden = false;
 }
 
-function renderMenu(problemList) {
+function createMetaItem(iconName, text, className = 'meta-item') {
+  const item = createElement('span', className);
+  item.append(createIcon(iconName, 13), text);
+
+  return item;
+}
+
+function renderMenu() {
+  problemCountElement.textContent = `Problems · ${problemList.length}`;
   problemListElement.replaceChildren();
-  problemList.forEach((problem) => {
+  problemList.forEach((problem, index) => {
     const item = createElement('li');
     const card = createElement('button', 'problem-card');
     card.type = 'button';
+    const top = createElement('div', 'problem-card-top');
+    top.append(
+      createElement('span', 'problem-index', String(index + 1).padStart(2, '0')),
+      createElement('span', `pill pill-${String(problem.difficulty).toLowerCase()}`, problem.difficulty),
+    );
+    const elapsedSeconds = Math.floor(loadElapsedMs(problem.id) / 1000);
     const meta = createElement('div', 'problem-card-meta');
     meta.append(
-      createElement('span', undefined, problem.difficulty),
-      createElement('span', undefined, `${problem.testCount} tests`),
+      createMetaItem('flask', `${problem.testCount} tests`),
+      elapsedSeconds > 0
+        ? createMetaItem('clock', `${formatElapsed(elapsedSeconds)} spent`, 'meta-item meta-item-active')
+        : createMetaItem('clock', 'Not started'),
     );
+    const arrow = createElement('span', 'problem-card-arrow');
+    arrow.appendChild(createIcon('arrow', 16));
+    meta.appendChild(arrow);
     card.append(
+      top,
       createElement('h2', 'problem-card-title', problem.title),
       createElement('p', 'problem-card-summary', problem.summary),
       meta,
@@ -657,7 +884,8 @@ function renderMenu(problemList) {
 }
 
 async function start() {
-  renderMenu(await globalThis.practice.list());
+  problemList = await globalThis.practice.list();
+  renderMenu();
   backButton.addEventListener('click', backToMenu);
   resetButton.addEventListener('click', handleReset);
   globalThis.addEventListener('beforeunload', () => {

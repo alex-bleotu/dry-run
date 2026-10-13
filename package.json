@@ -20,6 +20,8 @@
     "start": "electron . --no-sandbox"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "marked": "^18.1.1",
     "monaco-editor": "^0.57.0"
   },
@@ -41,12 +43,21 @@
       "renderer/**/*",
       "problems/**/*",
       "!problems/**/solution.cpp",
+      "node_modules/@fontsource-variable/inter/files/inter-latin-*wght-normal.woff2",
+      "node_modules/@fontsource-variable/inter/LICENSE",
+      "node_modules/@fontsource-variable/inter/package.json",
+      "node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-*wght-normal.woff2",
+      "node_modules/@fontsource-variable/jetbrains-mono/LICENSE",
+      "node_modules/@fontsource-variable/jetbrains-mono/package.json",
       "node_modules/marked/lib/marked.umd.js",
       "node_modules/marked/package.json",
       "node_modules/monaco-editor/min/**/*",
       "node_modules/monaco-editor/package.json",
       "!**/node_modules/monaco-editor/{dev,esm,min-maps}/**",
       "!**/node_modules/marked/{bin,man}/**",
+      "!**/node_modules/@fontsource-variable/*/{scss/**,*.css,*.ts,metadata.json,unicode.json}",
+      "!**/node_modules/@fontsource-variable/*/files/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*",
+      "!**/node_modules/@fontsource-variable/*/files/*-{italic,opsz-normal,standard-normal}.woff2",
       "!**/*.map",
       "!**/node_modules/dompurify/src/**"
     ],

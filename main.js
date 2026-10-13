@@ -46,7 +46,7 @@ function writeSolution(id, code) {
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#0a0b10',
     height: 900,
     icon: path.join(__dirname, 'icon.png'),
     title: 'Dry Run',
@@ -89,6 +89,7 @@ ipcMain.handle('app:open', (event, id) => {
   return {
     code: readSolution(id),
     defaultInput: visibleTestList.length > 0 ? visibleTestList[visibleTestList.length - 1].input : {},
+    difficulty: meta.difficulty,
     inputKeys: meta.inputKeys,
     problem: fs.readFileSync(path.join(directory, 'problem.md'), 'utf8'),
     title: meta.title,
