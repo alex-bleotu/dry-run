@@ -18,6 +18,7 @@
     "dist:linux": "electron-builder --linux AppImage --publish never",
     "dist:win": "electron-builder --win nsis --publish never",
     "generate-tests": "node tools/generate-all.js",
+    "manifest": "node tools/build-manifest.js",
     "preview:web": "node tools/serve-web.js",
     "start": "electron . --no-sandbox"
   },
