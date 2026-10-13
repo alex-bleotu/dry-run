@@ -32,6 +32,8 @@ jobs:
           path: |
             dist/*.AppImage
             dist/*.exe
+            dist/*.blockmap
+            dist/latest*.yml
 
   release:
     needs: build
@@ -47,4 +49,4 @@ jobs:
           gh release create "$GITHUB_REF_NAME" artifacts/* \
             --repo "$GITHUB_REPOSITORY" \
             --title "Dry Run $GITHUB_REF_NAME" \
-            --notes "Linux: download the AppImage, make it executable (chmod +x) and run it. Windows: run the setup exe. Dry Run compiles your C++ with g++, so install g++ (Linux) or MinGW-w64 (Windows) and make sure it is on your PATH."
+            --notes "Linux: download the AppImage, make it executable (chmod +x) and run it. Windows: run the setup exe. Dry Run compiles your C++ with g++, so install g++ (Linux) or MinGW-w64 (Windows) and make sure it is on your PATH. From 1.1.0 on, installed copies update themselves from this page. The latest*.yml and .blockmap files are for those updates."

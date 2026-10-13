@@ -2,7 +2,7 @@
   "name": "dry-run",
   "productName": "Dry Run",
   "description": "Timed C++ coding interview practice with hidden tests, in a desktop app.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "license": "MIT",
   "author": "alex-bleotu",
@@ -25,6 +25,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "electron-updater": "^6.8.9",
     "marked": "^18.1.1",
     "monaco-editor": "^0.57.0"
   },
@@ -39,11 +40,20 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "alex-bleotu",
+        "repo": "dry-run"
+      }
+    ],
     "files": [
+      "app-update.js",
       "judge.js",
       "main.js",
       "preload.js",
       "runner.js",
+      "updater.js",
       "icon.png",
       "renderer/**/*",
       "problems/**/*",
