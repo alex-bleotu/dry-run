@@ -1,9 +1,11 @@
 name: Release
 
+# Push a tag like v1.2.0, or press "Run workflow" on the Actions tab to release the version in package.json.
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -39,6 +41,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -46,7 +49,12 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" artifacts/* \
+          TAG="$GITHUB_REF_NAME"
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            TAG="v$(node -p "require('./package.json').version")"
+          fi
+          gh release create "$TAG" artifacts/* \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Dry Run $GITHUB_REF_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "Dry Run $TAG" \
             --notes "Linux: download the AppImage, make it executable (chmod +x) and run it. Windows: run the setup exe. Dry Run compiles your C++ with g++, so install g++ (Linux) or MinGW-w64 (Windows) and make sure it is on your PATH. From 1.1.0 on, installed copies update themselves from this page. The latest*.yml and .blockmap files are for those updates."

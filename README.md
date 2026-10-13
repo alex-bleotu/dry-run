@@ -39,7 +39,7 @@ From version 1.1.0 on, the Windows installer and the AppImage keep themselves up
 
 Version 1.0.0 cannot update itself, so install 1.1.0 from the releases page once.
 
-To release a new version, bump `version` in `package.json`, commit, and push a tag like `v1.2.0`. The release workflow builds both installers and uploads them together with `latest.yml`, `latest-linux.yml` and the `.blockmap` files, which the installed apps read to find the update.
+To release a new version, bump `version` in `package.json` and commit, then push a tag like `v1.2.0` or press **Run workflow** on the Release workflow in the Actions tab (it releases the version in `package.json` and creates its tag). The release workflow builds both installers and uploads them together with `latest.yml`, `latest-linux.yml` and the `.blockmap` files, which the installed apps read to find the update.
 
 ## Run from source
 
