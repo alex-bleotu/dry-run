@@ -76,17 +76,32 @@ function replaceAll(text, search, replacement, name) {
   return text.split(search).join(replacement);
 }
 
+// Files the page loads by name get ?v=<hash of this build>, so a browser never pairs a new page with a stylesheet
+// or script it cached from an earlier deploy. practice.js passes the same version on to the workers it starts.
+function computeBuildVersion() {
+  const hash = crypto.createHash('sha256');
+  [...SITE_FILE_LIST, 'renderer/styles.css', 'compiler/bundle.js'].forEach((file) => {
+    hash.update(fs.readFileSync(path.join(OUTPUT_DIRECTORY, file)));
+  });
+
+  return hash.digest('hex').slice(0, 12);
+}
+
 function buildPage() {
+  const css = fs.readFileSync(path.join(ROOT, 'renderer', 'styles.css'), 'utf8');
+  writeOutput('renderer/styles.css', replaceAll(css, '../node_modules/', '../vendor/', 'styles.css'));
+
+  const version = `?v=${computeBuildVersion()}`;
   let html = fs.readFileSync(path.join(ROOT, 'renderer', 'index.html'), 'utf8');
-  html = replaceAll(html, 'href="styles.css"', 'href="renderer/styles.css"', 'index.html');
+  html = replaceAll(html, 'href="styles.css"', `href="renderer/styles.css${version}"`, 'index.html');
   html = replaceAll(html, 'src="../node_modules/', 'src="vendor/', 'index.html');
   html = replaceAll(
     html,
     '<script src="renderer.js"></script>',
     [
-      '<script src="judge.js"></script>',
-      '<script src="web/practice.js"></script>',
-      '<script src="renderer/renderer.js"></script>',
+      `<script src="judge.js${version}"></script>`,
+      `<script src="web/practice.js${version}"></script>`,
+      `<script src="renderer/renderer.js${version}"></script>`,
     ].join('\n    '),
     'index.html',
   );
@@ -98,9 +113,6 @@ function buildPage() {
     'index.html',
   );
   writeOutput('index.html', html);
-
-  const css = fs.readFileSync(path.join(ROOT, 'renderer', 'styles.css'), 'utf8');
-  writeOutput('renderer/styles.css', replaceAll(css, '../node_modules/', '../vendor/', 'styles.css'));
 }
 
 function buildProblems() {
@@ -209,9 +221,9 @@ async function main() {
   SITE_FILE_LIST.forEach((file) => copyOutput(path.join(ROOT, file), file));
   VENDOR_FILE_LIST.forEach((file) => copyOutput(path.join(NODE_MODULES_DIRECTORY, file), `vendor/${file}`));
   copyOutput(path.join(NODE_MODULES_DIRECTORY, 'monaco-editor', 'min'), 'vendor/monaco-editor/min');
-  buildPage();
   const problemList = buildProblems();
   const fileMap = await buildCompiler();
+  buildPage();
 
   const compilerSize = Object.values(fileMap).reduce((total, entry) => total + entry.compressedSize, 0);
   console.log(`Built ${path.relative(ROOT, OUTPUT_DIRECTORY)}/ with ${problemList.length} problems.`);

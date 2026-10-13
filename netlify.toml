@@ -8,3 +8,15 @@
   NODE_VERSION = "22"
   # The website does not need Electron itself, so skip its 100 MB download during install.
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
+
+# Browsers always recheck the page itself; it names this build's files with a ?v= version, so stale copies of
+# the stylesheet or scripts from an earlier deploy are never used with it.
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
