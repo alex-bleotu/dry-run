@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('practice', {
   run: (payload) => ipcRenderer.invoke('app:run', payload),
   runCustom: (payload) => ipcRenderer.invoke('app:run-custom', payload),
   save: (payload) => ipcRenderer.invoke('app:save', payload),
+  syncProblems: () => ipcRenderer.invoke('app:sync-problems'),
 });

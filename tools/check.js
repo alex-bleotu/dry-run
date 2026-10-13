@@ -32,7 +32,9 @@ async function checkProblem(id, file) {
 
 async function main() {
   const [idArgument, fileArgument] = process.argv.slice(2);
-  const idList = idArgument ? [idArgument] : fs.readdirSync(PROBLEMS_DIRECTORY);
+  const idList = idArgument
+    ? [idArgument]
+    : fs.readdirSync(PROBLEMS_DIRECTORY, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
   for (const id of idList) {
     const file = fileArgument ? path.resolve(fileArgument) : path.join(__dirname, id, 'reference.cpp');
     await checkProblem(id, file);

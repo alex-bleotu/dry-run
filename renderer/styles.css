@@ -290,8 +290,44 @@ kbd {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  margin: 0 0 14px;
+  margin: 0;
   text-transform: uppercase;
+}
+
+.menu-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-block-end: 14px;
+  min-block-size: 32px;
+}
+
+.menu-status {
+  color: var(--muted);
+  flex: 1;
+  font-size: 13px;
+  text-align: end;
+}
+
+.menu-refresh {
+  align-items: center;
+  display: inline-flex;
+  font-size: 13px;
+  gap: 8px;
+  padding: 6px 12px;
+}
+
+.menu-refresh[hidden] {
+  display: none;
+}
+
+.menu-refresh:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.menu-refresh:disabled svg {
+  animation: spin 900ms linear infinite;
 }
 
 .problem-list {

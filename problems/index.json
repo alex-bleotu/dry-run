@@ -1,0 +1,82 @@
+{
+  "problems": [
+    {
+      "files": [
+        {
+          "path": "meta.json",
+          "sha256": "b830047396ad7d8b640b320d8187e21a181a53dc3c94ec59155442a04c1cf58b"
+        },
+        {
+          "path": "problem.md",
+          "sha256": "26ddd1c426d943c64d1a4bb8ff48c7e940ca01e31fcb51ef705471c8736d0d55"
+        },
+        {
+          "path": "starter.cpp",
+          "sha256": "da605104b595aa05e419a8edfdffb1b4d397a5082f594ed06fa704aabc134941"
+        },
+        {
+          "path": "tests/visible.json",
+          "sha256": "fadc805572a79f80ec1e3a4d2db3a90e6d1ba9897591f3df520c9c7a4210e5cd"
+        },
+        {
+          "path": "tests/hidden.json",
+          "sha256": "826ee39ba44a4ccce36a4b7857885ec99530a1031184d35647e8bf96b4c2a881"
+        }
+      ],
+      "id": "invoice-totals",
+      "version": "35bbec0b7b7403e17d0caf1de76c1dbea2ac272f28d114a577a59a4b8e21c320"
+    },
+    {
+      "files": [
+        {
+          "path": "meta.json",
+          "sha256": "d56413e5b19b3f2f83abf21b73fd5d5fb2bae63ea0617b589a456b52058a3afe"
+        },
+        {
+          "path": "problem.md",
+          "sha256": "88c8200bb4aa797643c3bb9b40c96b49c18b5b2491d77e953b9544f0887ef754"
+        },
+        {
+          "path": "starter.cpp",
+          "sha256": "39f87941f43ef02fc11e43afd21e8c380e0ae73af185cc73608d010e3b5d5114"
+        },
+        {
+          "path": "tests/visible.json",
+          "sha256": "2f9556f0938b2d658a607972e82634862ebab702c8bf03e1b676ad50d1391b2f"
+        },
+        {
+          "path": "tests/hidden.json",
+          "sha256": "401a7c486a8ba41e84b2cd5ff2083b438d27c981e74ec689830606d4fd753c3b"
+        }
+      ],
+      "id": "rate-limiter",
+      "version": "1e594d4a905c5840abb56eb75a5a603a5c8eecb178479cb35239069fd9c5b4ae"
+    },
+    {
+      "files": [
+        {
+          "path": "meta.json",
+          "sha256": "5aeb8f3ce97699c8c1c54455de18463dabc29044cb69391b91edf6e224ebd936"
+        },
+        {
+          "path": "problem.md",
+          "sha256": "26929e96acd5793905af750233c8a9e249a37a53776d0df514384e0f28c4ffcd"
+        },
+        {
+          "path": "starter.cpp",
+          "sha256": "408d76567388a8902fddf1dd3c1c895d759bc1284bd38e3704cb457bf25eedf0"
+        },
+        {
+          "path": "tests/visible.json",
+          "sha256": "36ffd0d27540987e266b5d25b83d1a567687074bf46b3e0055c2956960b1e88b"
+        },
+        {
+          "path": "tests/hidden.json",
+          "sha256": "f75f8fcf77617bb7365332107fd6959f772844ba815b441f81ab0035f76ce7ac"
+        }
+      ],
+      "id": "subscription-billing",
+      "version": "243f60e62fb34ad00361e967f8ab88d67662b1f1f04d744217ff402fdc5995ab"
+    }
+  ]
+}

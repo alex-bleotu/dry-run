@@ -6,3 +6,5 @@ fs.readdirSync(__dirname, { withFileTypes: true })
   .forEach((entry) => {
     require(path.join(__dirname, entry.name, 'generate-tests.js'));
   });
+
+require('./build-manifest');
