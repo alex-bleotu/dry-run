@@ -73,7 +73,7 @@ globalThis.fetch = (input, init) => {
 function loadCompiler() {
   if (!compilerPromise) {
     compilerPromise = (async () => {
-      postStatus('Downloading compiler...');
+      postStatus('Loading compiler...');
       manifest = await (await fetchOk(new URL('manifest.json', COMPILER_URL), { cache: 'no-cache' })).json();
       const [{ Exit, runClang }, pch] = await Promise.all([
         import(new URL(`bundle.js${BUILD_VERSION}`, COMPILER_URL).href),
@@ -81,7 +81,7 @@ function loadCompiler() {
       ]);
       const fetchProgress = ({ doneLength, totalLength }) => {
         const percent = Math.min(100, Math.floor((100 * doneLength) / totalLength));
-        postStatus(percent < 100 ? `Downloading compiler... ${percent}%` : 'Starting compiler...');
+        postStatus(percent < 100 ? `Loading compiler... ${percent}%` : 'Starting compiler...');
       };
       await runClang(['clang++', '--version'], {}, { fetchProgress, stderr: null, stdout: null });
       postStatus(manifest.label, manifest.description);
