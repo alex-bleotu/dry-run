@@ -9,10 +9,10 @@ let compilerPromise = null;
 let lastStatus = '';
 let manifest = null;
 
-function postStatus(text) {
-  if (text !== lastStatus) {
-    lastStatus = text;
-    globalThis.postMessage({ text, type: 'status' });
+function postStatus(text, title = '') {
+  if (`${text}\n${title}` !== lastStatus) {
+    lastStatus = `${text}\n${title}`;
+    globalThis.postMessage({ text, title, type: 'status' });
   }
 }
 
@@ -83,7 +83,7 @@ function loadCompiler() {
         postStatus(percent < 100 ? `Downloading compiler... ${percent}%` : 'Starting compiler...');
       };
       await runClang(['clang++', '--version'], {}, { fetchProgress, stderr: null, stdout: null });
-      postStatus(manifest.description);
+      postStatus(manifest.label, manifest.description);
 
       return { Exit, pch, runClang };
     })();

@@ -10,7 +10,7 @@
   const statusListenerList = [];
   let problemListPromise = null;
   let compilerWorker = null;
-  let compilerStatus = 'Loading compiler...';
+  let compilerStatus = { text: 'Loading compiler...', title: '' };
   let nextCompileId = 1;
 
   async function fetchFile(url) {
@@ -66,9 +66,9 @@
     globalThis.localStorage.setItem(`${CODE_STORAGE_PREFIX}${id}`, code);
   }
 
-  function setCompilerStatus(text) {
-    compilerStatus = text;
-    statusListenerList.forEach((listener) => listener(text));
+  function setCompilerStatus(text, title = '') {
+    compilerStatus = { text, title };
+    statusListenerList.forEach((listener) => listener(compilerStatus));
   }
 
   function rejectPendingCompiles(message) {
@@ -81,7 +81,7 @@
       compilerWorker = new Worker('web/compiler-worker.js', { type: 'module' });
       compilerWorker.addEventListener('message', ({ data }) => {
         if (data.type === 'status') {
-          setCompilerStatus(data.text);
+          setCompilerStatus(data.text, data.title);
 
           return;
         }

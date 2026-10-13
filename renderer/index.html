@@ -62,8 +62,13 @@
           </svg>
         </button>
       </header>
-      <main class="layout" id="layout">
-        <section class="panel" aria-label="Problem">
+      <nav class="pane-tabs segmented" role="tablist" aria-label="Sections">
+        <button class="segment pane-tab" type="button" role="tab" data-pane="problem" aria-selected="true">Problem</button>
+        <button class="segment pane-tab" type="button" role="tab" data-pane="code" aria-selected="false">Code</button>
+        <button class="segment pane-tab" type="button" role="tab" data-pane="output" aria-selected="false">Output</button>
+      </nav>
+      <main class="layout" id="layout" data-pane="problem">
+        <section class="panel problem-panel" aria-label="Problem">
           <div class="panel-header">
             <span class="panel-label">
               <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -89,7 +94,7 @@
                 <span class="file-badge" aria-hidden="true">C++</span>
                 solution.cpp
               </span>
-              <span class="panel-hint" id="compiler-hint">g++ -std=c++17 -Wall -Wextra -Werror -O2</span>
+              <span class="panel-hint" id="compiler-hint" title="g++ -std=c++17 -Wall -Wextra -Werror -O2">C++17</span>
             </div>
             <div class="editor" id="editor"></div>
           </section>
