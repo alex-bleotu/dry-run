@@ -1390,18 +1390,6 @@ pre.output {
   margin: 0;
 }
 
-.dialog-icon {
-  align-items: center;
-  background: var(--fail-soft);
-  block-size: 40px;
-  border-radius: 10px;
-  color: var(--fail);
-  display: flex;
-  inline-size: 40px;
-  justify-content: center;
-  margin-block-end: 16px;
-}
-
 .dialog-title {
   font-size: 17px;
   font-weight: 650;
